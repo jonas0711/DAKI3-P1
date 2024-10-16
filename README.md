@@ -146,5 +146,3 @@ Andre energirelaterede mål, herunder kapacitet til at producere vedvarende ener
 	• energy_cons_change_twh: Ændring i energiforbrug målt i terawatt-timer.
 	• net_elec_imports: Netto import/eksport af elektricitet.
 	• net_elec_imports_share_demand: Netto el-import som andel af el-efterspørgslen.
-
-![Uploading image.png…]()
