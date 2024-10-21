@@ -4,9 +4,9 @@ import joblib
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
-# Indlæser datasæt og den gemte model
-df = pd.read_csv(r"C:\Users\jonas\Desktop\Design og anvendelse af kunstig inteligens\P1\Energi_Data.csv")
-model = joblib.load('gradient_boosting_model_2000_2010.pkl')
+# Indlæser datasættet med den korrekte filsti
+df = pd.read_csv(r"C:\Users\jonas\Desktop\Design og anvendelse af kunstig inteligens\GitHub Repo\P1-DAKI3\DAKI3-P1\Europe_data.csv")
+model = joblib.load('gradient_boosting_model_Europe_2000_2010.pkl')
 
 # Definerer features og scaler for at normalisere dataene som i træning
 features = ['gdp', 'fossil_fuel_consumption', 'renewables_consumption', 'population']

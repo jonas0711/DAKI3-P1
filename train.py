@@ -6,8 +6,8 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import joblib
 
-# Indlæser datasættet
-df = pd.read_csv(r"C:\Users\jonas\Desktop\Design og anvendelse af kunstig inteligens\P1\Energi_Data.csv")
+# Indlæser datasættet med den korrekte filsti
+df = pd.read_csv(r"C:\Users\jonas\Desktop\Design og anvendelse af kunstig inteligens\GitHub Repo\P1-DAKI3\DAKI3-P1\Europe_data.csv")
 
 # Definerer features og målvariabel
 features = ['gdp', 'fossil_fuel_consumption', 'renewables_consumption', 'population']  # Opdater efter behov
@@ -55,6 +55,6 @@ print("Mean Squared Error (MSE):", mean_squared_error(y_test, y_pred))
 print("R² Score:", r2_score(y_test, y_pred))
 
 # Gemmer den trænede model til en fil
-model_filename = 'gradient_boosting_model_2000_2010.pkl'
+model_filename = 'gradient_boosting_model_Europe_2000_2010.pkl'
 joblib.dump(model, model_filename)
 print(f"Model gemt som {model_filename}")
