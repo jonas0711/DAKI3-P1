@@ -6,10 +6,18 @@ from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import numpy as np
 
-# Indlæs dataset
-dataset = pd.read_csv(r'Energi_Data.csv')
+# ======== Konfigurationsvariabler ========
+CONTINENT = 'Europe'  # Ændr dette til det ønskede kontinent, f.eks. 'Asia', 'Africa', etc.
+DATA_FILE = f"{CONTINENT}_data.csv"
+MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"
+FEATURES_FILENAME = f"features_list_{CONTINENT.lower()}.pkl"
+YEAR_SPLIT = 2009  # Årstal til at splitte data i trænings- og testdata
+# =========================================
 
-def features_handling(dataset, year=2009):
+# Indlæs dataset
+dataset = pd.read_csv(DATA_FILE)
+
+def features_handling(dataset, year=YEAR_SPLIT):
     # Erstat '\n' og mellemrum med underscore i alle kolonnenavne
     dataset.columns = dataset.columns.str.replace('\n', ' ').str.replace(' ', '_')
 
@@ -54,9 +62,8 @@ def features_handling(dataset, year=2009):
     final_features = end_data.drop(columns=[target]).columns.tolist()
 
     # Gem de anvendte feature-navne efter one-hot encoding
-    features_filename = 'features_list.pkl'
-    joblib.dump(final_features, features_filename)
-    print(f"Features gemt som {features_filename}")
+    joblib.dump(final_features, FEATURES_FILENAME)
+    print(f"Features gemt som {FEATURES_FILENAME}")
 
     # Adskil features og target
     X = end_data.drop(columns=[target])
@@ -93,9 +100,8 @@ def features_handling(dataset, year=2009):
     print(f"Root Mean Squared Error (RMSE): {rmse}")
 
     # Gemmer den trænede model til en fil
-    model_filename = 'gradient_boosting_model_2000_2009.pkl'
-    joblib.dump(model, model_filename)
-    print(f"Model gemt som {model_filename}")
+    joblib.dump(model, MODEL_FILENAME)
+    print(f"Model gemt som {MODEL_FILENAME}")
 
 # Kald funktionen og print resultatet
 features_handling(dataset)

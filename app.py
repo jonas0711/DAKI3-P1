@@ -4,25 +4,47 @@ import joblib
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
+# ======== Konfigurationsvariabler ========
+CONTINENT = 'Europe'  # Ændr dette til det ønskede kontinent, f.eks. 'Asia', 'Africa', etc.
+DATA_FILE = f"{CONTINENT}_data.csv"
+MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"
+FEATURES_FILENAME = f"features_list_{CONTINENT.lower()}.pkl"
+TEST_YEAR_THRESHOLD = 2009  # Årstalsgrænse for testperiode
+# =========================================
+
 # Indlæs datasættet
-df = pd.read_csv(r'Energi_Data.csv')
+df = pd.read_csv(DATA_FILE)
 
 # Erstat '\n' og mellemrum med underscores i kolonnenavne for at matche modelens træning
 df.columns = df.columns.str.replace('\n', ' ').str.replace(' ', '_')
 
 # Indlæs den gemte model og features
-features = joblib.load('features_list.pkl')
-model = joblib.load('gradient_boosting_model_2000_2009.pkl')
+try:
+    features = joblib.load(FEATURES_FILENAME)
+except FileNotFoundError:
+    st.error(f"Feature-listen '{FEATURES_FILENAME}' blev ikke fundet. Kør 'features.py' først.")
+    st.stop()
+
+try:
+    model = joblib.load(MODEL_FILENAME)
+except FileNotFoundError:
+    st.error(f"Modellen '{MODEL_FILENAME}' blev ikke fundet. Kør 'features.py' først.")
+    st.stop()
 
 # Håndterer kategoriske data (country) via one-hot encoding som i træning
 df_encoded = pd.get_dummies(df, columns=['country'])
 
 # Begrænser data til testperioden (2011 og frem)
-test_years = df[(df['year'] > 2009)]['year'].unique()
+test_years = df[df['year'] > TEST_YEAR_THRESHOLD]['year'].unique()
 
 # Normaliserer data som i træningen
 scaler = StandardScaler()
-scaler.fit(df_encoded[features].dropna())
+# Vi antager, at feature-listen inkluderer alle nødvendige kolonner
+try:
+    scaler.fit(df_encoded[features].dropna())
+except KeyError as e:
+    st.error(f"En eller flere features mangler i datasættet: {e}")
+    st.stop()
 
 # Streamlit-app opsætning
 st.title("Forudsigelse af CO₂-udledninger med Machine Learning")
@@ -44,7 +66,6 @@ selected_country = st.selectbox("Vælg et Land:", countries)
 # Årstalsvalg
 selected_year = st.selectbox("Vælg Årstal (kun testperiode):", sorted(test_years))
 
-
 # Filtrerer data for det valgte land og år
 encoded_country_col = f'country_{selected_country}'
 if encoded_country_col not in df_encoded.columns:
@@ -54,35 +75,45 @@ else:
 
     if not selected_data.empty:
         # Brug de samme features som modellen blev trænet med
-        X_new = selected_data[features]
-        y_actual = df[(df['country'] == selected_country) & (df['year'] == selected_year)]['Value_co2_emissions_kt_by_country'].values[0]
+        try:
+            X_new = selected_data[features]
+        except KeyError as e:
+            st.error(f"En eller flere features mangler i det valgte datasæt: {e}")
+            st.stop()
 
-        # Normaliserer de nye data
-        X_new_normalized = scaler.transform(X_new)
+        # Hent den faktiske værdi
+        actual_row = df[(df['country'] == selected_country) & (df['year'] == selected_year)]
+        if actual_row.empty:
+            st.write("Faktiske data ikke tilgængelige for det valgte land og år.")
+        else:
+            y_actual = actual_row['Value_co2_emissions_kt_by_country'].values[0]
 
-        # Forudsiger med den gemte model
-        y_pred = model.predict(X_new_normalized)[0]
+            # Normaliserer de nye data
+            X_new_normalized = scaler.transform(X_new)
 
-        # Beregn forskellen og procentvis afvigelse
-        difference = y_actual - y_pred
-        percent_difference = (abs(difference) / y_actual) * 100
+            # Forudsiger med den gemte model
+            y_pred = model.predict(X_new_normalized)[0]
 
-        # Præsentation af forudsigelse og faktiske værdier
-        st.subheader("Forudsigelse sammenlignet med Faktiske Data")
-        st.write(f"**Faktisk CO₂-udledning:** {y_actual:,.2f} kt")
-        st.write(f"**Forudsagt CO₂-udledning:** {y_pred:,.2f} kt")
-        st.write(f"**Afvigelse:** {difference:,.2f} kt")
-        st.write(f"**Procentvis Afvigelse:** {percent_difference:.2f}%")
+            # Beregn forskellen og procentvis afvigelse
+            difference = y_actual - y_pred
+            percent_difference = (abs(difference) / y_actual) * 100 if y_actual != 0 else 0
 
-        # Visualisering af forudsigelse og faktiske data
-        fig, ax = plt.subplots(figsize=(8, 5))
-        ax.bar(['Faktisk', 'Forudsagt'], [y_actual, y_pred], color=['#1f77b4', '#ff7f0e'])
-        ax.set_ylabel("CO₂-udledninger (kt)")
-        ax.set_title(f"CO₂-udledning for {selected_country} i {selected_year}")
+            # Præsentation af forudsigelse og faktiske værdier
+            st.subheader("Forudsigelse sammenlignet med Faktiske Data")
+            st.write(f"**Faktisk CO₂-udledning:** {y_actual:,.2f} kt")
+            st.write(f"**Forudsagt CO₂-udledning:** {y_pred:,.2f} kt")
+            st.write(f"**Afvigelse:** {difference:,.2f} kt")
+            st.write(f"**Procentvis Afvigelse:** {percent_difference:.2f}%")
 
-        for i, v in enumerate([y_actual, y_pred]):
-            ax.text(i, v + 0.05 * max(y_actual, y_pred), f"{v:,.2f} kt", ha='center', fontweight='bold')
+            # Visualisering af forudsigelse og faktiske data
+            fig, ax = plt.subplots(figsize=(8, 5))
+            ax.bar(['Faktisk', 'Forudsagt'], [y_actual, y_pred], color=['#1f77b4', '#ff7f0e'])
+            ax.set_ylabel("CO₂-udledninger (kt)")
+            ax.set_title(f"CO₂-udledning for {selected_country} i {selected_year}")
 
-        st.pyplot(fig)
+            for i, v in enumerate([y_actual, y_pred]):
+                ax.text(i, v + 0.05 * max(y_actual, y_pred), f"{v:,.2f} kt", ha='center', fontweight='bold')
+
+            st.pyplot(fig)
     else:
         st.write("Data ikke tilgængelig for det valgte land og år.")
