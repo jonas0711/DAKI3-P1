@@ -4,20 +4,29 @@ import joblib
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
-# Indlæser datasættet med den korrekte filsti
-df = pd.read_csv(r"C:\Users\jonas\Desktop\Design og anvendelse af kunstig inteligens\GitHub Repo\P1-DAKI3\DAKI3-P1\Europe_data.csv")
-model = joblib.load('gradient_boosting_model_Europe_2000_2010.pkl')
+# Indlæs datasættet
+df = pd.read_csv(r'Energi_Data.csv')
 
-# Definerer features og scaler for at normalisere dataene som i træning
-features = ['gdp', 'fossil_fuel_consumption', 'renewables_consumption', 'population']
-scaler = StandardScaler()
-scaler.fit(df[features].dropna())
+# Erstat '\n' og mellemrum med underscores i kolonnenavne for at matche modelens træning
+df.columns = df.columns.str.replace('\n', ' ').str.replace(' ', '_')
+
+# Indlæs den gemte model og features
+features = joblib.load('features_list.pkl')
+model = joblib.load('gradient_boosting_model_2000_2009.pkl')
+
+# Håndterer kategoriske data (country) via one-hot encoding som i træning
+df_encoded = pd.get_dummies(df, columns=['country'])
 
 # Begrænser data til testperioden (2011 og frem)
-test_years = df[(df['year'] > 2010)]['year'].unique()
+test_years = df[(df['year'] > 2009)]['year'].unique()
 
-# Opsætning af Streamlit-app
+# Normaliserer data som i træningen
+scaler = StandardScaler()
+scaler.fit(df_encoded[features].dropna())
+
+# Streamlit-app opsætning
 st.title("Forudsigelse af CO₂-udledninger med Machine Learning")
+
 st.write(
     """
     Dette værktøj forudsiger CO₂-udledninger for et valgt land og årstal ved hjælp af en trænet 
@@ -28,46 +37,52 @@ st.write(
 )
 
 # Land- og årstalvalg
-countries = df['country'].unique()
+# Sørg for kun at hente unikke lande fra 'country'-kolonnen, og ikke hele data-rækker
+countries = df['country'].unique()  # Dette vil kun få landenes navne
 selected_country = st.selectbox("Vælg et Land:", countries)
+
+# Årstalsvalg
 selected_year = st.selectbox("Vælg Årstal (kun testperiode):", sorted(test_years))
 
+
 # Filtrerer data for det valgte land og år
-selected_data = df[(df['country'] == selected_country) & (df['year'] == selected_year)]
-
-if not selected_data.empty:
-    # Henter de nødvendige features fra datasættet
-    X_new = selected_data[features]
-    y_actual = selected_data['Value_co2_emissions_kt_by_country'].values[0]
-    
-    # Normaliserer de nye data
-    X_new_normalized = scaler.transform(X_new)
-    
-    # Forudsiger med den gemte model
-    y_pred = model.predict(X_new_normalized)[0]
-    
-    # Beregner forskellen og procentvis afvigelse
-    difference = y_actual - y_pred
-    percent_difference = (abs(difference) / y_actual) * 100
-    
-    # Præsentation af forudsigelse og faktiske værdier
-    st.subheader("Forudsigelse sammenlignet med Faktiske Data")
-    st.write(f"**Faktisk CO₂-udledning:** {y_actual:,.2f} kt")
-    st.write(f"**Forudsagt CO₂-udledning:** {y_pred:,.2f} kt")
-    st.write(f"**Afvigelse:** {difference:,.2f} kt")
-    st.write(f"**Procentvis Afvigelse:** {percent_difference:.2f}%")
-    
-    # Visualisering af forudsigelse og faktiske data
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.bar(['Faktisk', 'Forudsagt'], [y_actual, y_pred], color=['#1f77b4', '#ff7f0e'])
-    ax.set_ylabel("CO₂-udledninger (kt)", fontsize=12)
-    ax.set_title(f"CO₂-udledning for {selected_country} i {selected_year}", fontsize=14)
-    
-    # Tilføjer værdier til søjlediagrammet
-    for i, v in enumerate([y_actual, y_pred]):
-        ax.text(i, v + 0.05 * max(y_actual, y_pred), f"{v:,.2f} kt", ha='center', fontweight='bold')
-    
-    st.pyplot(fig)
-
+encoded_country_col = f'country_{selected_country}'
+if encoded_country_col not in df_encoded.columns:
+    st.write(f"Data ikke tilgængelig for det valgte land: {selected_country}")
 else:
-    st.write("Data ikke tilgængelig for det valgte land og år.")
+    selected_data = df_encoded[(df_encoded[encoded_country_col] == 1) & (df_encoded['year'] == selected_year)]
+
+    if not selected_data.empty:
+        # Brug de samme features som modellen blev trænet med
+        X_new = selected_data[features]
+        y_actual = df[(df['country'] == selected_country) & (df['year'] == selected_year)]['Value_co2_emissions_kt_by_country'].values[0]
+
+        # Normaliserer de nye data
+        X_new_normalized = scaler.transform(X_new)
+
+        # Forudsiger med den gemte model
+        y_pred = model.predict(X_new_normalized)[0]
+
+        # Beregn forskellen og procentvis afvigelse
+        difference = y_actual - y_pred
+        percent_difference = (abs(difference) / y_actual) * 100
+
+        # Præsentation af forudsigelse og faktiske værdier
+        st.subheader("Forudsigelse sammenlignet med Faktiske Data")
+        st.write(f"**Faktisk CO₂-udledning:** {y_actual:,.2f} kt")
+        st.write(f"**Forudsagt CO₂-udledning:** {y_pred:,.2f} kt")
+        st.write(f"**Afvigelse:** {difference:,.2f} kt")
+        st.write(f"**Procentvis Afvigelse:** {percent_difference:.2f}%")
+
+        # Visualisering af forudsigelse og faktiske data
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.bar(['Faktisk', 'Forudsagt'], [y_actual, y_pred], color=['#1f77b4', '#ff7f0e'])
+        ax.set_ylabel("CO₂-udledninger (kt)")
+        ax.set_title(f"CO₂-udledning for {selected_country} i {selected_year}")
+
+        for i, v in enumerate([y_actual, y_pred]):
+            ax.text(i, v + 0.05 * max(y_actual, y_pred), f"{v:,.2f} kt", ha='center', fontweight='bold')
+
+        st.pyplot(fig)
+    else:
+        st.write("Data ikke tilgængelig for det valgte land og år.")
