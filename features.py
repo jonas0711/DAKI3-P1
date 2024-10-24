@@ -87,6 +87,9 @@ def select_data():
 def split_data():
     '''Splitting dataset into train and test sæt'''
 
+def one_hot_encoding():
+    '''Making a one hot encoding of the country feature'''
+
 def scaler_data():
     '''Scaling the dataset'''
 
