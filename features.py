@@ -5,13 +5,15 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import numpy as np
+import json
 
 # ======== Konfigurationsvariabler ========
 CONTINENT = 'Europe'  # Ændr dette til det ønskede kontinent, f.eks. 'Asia', 'Africa', etc.
 DATA_FILE = f"{CONTINENT}_data.csv"
 MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"
-FEATURES_FILENAME = f"features_list_{CONTINENT.lower()}.pkl"
+FEATURES_SELECTED = "feature_1"
 YEAR_SPLIT = 2009  # Årstal til at splitte data i trænings- og testdata
+
 # =========================================
 
 # Indlæs dataset
@@ -21,7 +23,11 @@ def features_handling(dataset, year=YEAR_SPLIT):
     # Erstat '\n' og mellemrum med underscore i alle kolonnenavne
     dataset.columns = dataset.columns.str.replace('\n', ' ').str.replace(' ', '_')
 
-    features = [
+    with open('udvalgte_features.json', 'r') as file:
+        feature_schema = json.load(file)
+    features = feature_schema[FEATURES_SELECTED]
+
+    '''[
         "country",  # Sørg for at inkludere "country" kolonnen her, hvis den er en del af datasættet.
         "year", 
         "Density_(P/Km2)", 
@@ -44,7 +50,7 @@ def features_handling(dataset, year=YEAR_SPLIT):
         "renewables_share_energy", 
         "solar_share_energy", 
         "coal_share_energy"
-    ]
+    ]'''
 
     target = "Value_co2_emissions_kt_by_country"
 
@@ -62,8 +68,8 @@ def features_handling(dataset, year=YEAR_SPLIT):
     final_features = end_data.drop(columns=[target]).columns.tolist()
 
     # Gem de anvendte feature-navne efter one-hot encoding
-    joblib.dump(final_features, FEATURES_FILENAME)
-    print(f"Features gemt som {FEATURES_FILENAME}")
+    joblib.dump(final_features, FEATURES_SELECTED)
+    print(f"Features gemt som {FEATURES_SELECTED}")
 
     # Adskil features og target
     X = end_data.drop(columns=[target])
