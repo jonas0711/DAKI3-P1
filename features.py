@@ -103,5 +103,14 @@ def features_handling(dataset, year=YEAR_SPLIT):
     joblib.dump(model, MODEL_FILENAME)
     print(f"Model gemt som {MODEL_FILENAME}")
 
+def select_data():
+    '''Selecting features in the dataset'''
+
+def split_data():
+    '''Splitting dataset into train and test sæt'''
+
+def scaler_data():
+    '''Scaling the dataset'''
+
 # Kald funktionen og print resultatet
 features_handling(dataset)

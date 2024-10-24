@@ -13,8 +13,8 @@ def main():
     # Opdeling i train og test data
     X_train, y_train = features.split_data(selected_data)
 
-    # Scalering af data
-    X_train = features.scaler_data()
+    # Scalering af data --> Behøver ikke at være scaleret
+    #X_train = features.scaler_data()
 
     # Definerer modellen & træning
     model = RandomForestRegressor()
