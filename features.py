@@ -13,7 +13,6 @@ DATA_FILE = f"{CONTINENT}_data.csv"
 MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"
 FEATURES_SELECTED = "feature_1"
 YEAR_SPLIT = 2009  # Årstal til at splitte data i trænings- og testdata
-
 # =========================================
 
 # Indlæs dataset
@@ -25,6 +24,9 @@ def features_handling(dataset, year=YEAR_SPLIT):
 
     with open('udvalgte_features.json', 'r') as file:
         feature_schema = json.load(file)
+    
+    print(feature_schema)  # Udskriv hele ordbogen
+    print(FEATURES_SELECTED)
     features = feature_schema[FEATURES_SELECTED]
 
     '''[
