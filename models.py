@@ -9,6 +9,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge
 import json
 
 def linearregression():
@@ -58,6 +59,28 @@ def lassoregression():
     print(f"R² score (accuracy): {r2}")
     print(f"Root Mean Squared Error (RMSE): {rmse}")
 
+def rigderegression():
+    '''Lasso regression'''
+    data = pd.read_csv(DATA_FILE)
+
+    # Udvælger features
+    selected_data = features.select_data(data)
+
+    # Opdeling i train og test data
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+
+    X_train, X_test = features.scaler_data(X_train, X_test)
+
+    model = Ridge()
+    model.fit(X_train, y_train)
+
+    # Forudsigelser på testdata
+    y_pred = model.predict(X_test)
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    print("Rigde regression")
+    print(f"R² score (accuracy): {r2}")
+    print(f"Root Mean Squared Error (RMSE): {rmse}")
 
 def randomforestregression():
     # Hent datasæt
@@ -129,4 +152,4 @@ def gradientboost():
     print(f"Model gemt som {MODEL_FILENAME}")
 
 if __name__ == "__main__":
-    randomforestregression()
+    rigderegression()
