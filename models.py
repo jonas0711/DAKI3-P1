@@ -8,6 +8,12 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 
+def linearregression():
+    '''linear regression'''
+
+def lassoregression():
+    '''Lasso regression'''
+
 def randomforestregression():
     # Hent datasæt
     data = pd.read_csv(DATA_FILE)
