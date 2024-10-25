@@ -31,12 +31,12 @@ country_to_continent = {
 # Læs din CSV-fil
 df = pd.read_csv(r'CSV_files/Energi_Data.csv')
 
-# Gem en kopi af hele datasættet som world_data.csv
-df.to_csv('world_data.csv', index=False)
-print(f"Data for hele verden gemt i filen: world_data.csv")
-
 # Tilføj en kolonne til DataFrame, der repræsenterer kontinenter
 df['continent'] = df['country'].map(country_to_continent)
+
+# Gem en kopi af hele datasættet som world_data.csv i CSV_files mappen
+df.to_csv('CSV_files/world_data.csv', index=False)
+print(f"Data for hele verden gemt i filen: CSV_files/world_data.csv")
 
 # Loop igennem hver unikke kontinent og gem data til en separat CSV-fil
 for continent in df['continent'].unique():
@@ -44,7 +44,7 @@ for continent in df['continent'].unique():
     df_continent = df[df['continent'] == continent]
     
     # Opret et filnavn baseret på kontinentets navn
-    file_name = f"{continent}_data.csv"
+    file_name = f"CSV_files/{continent}_data.csv"
     
     # Gem data som CSV-fil
     df_continent.to_csv(file_name, index=False)
