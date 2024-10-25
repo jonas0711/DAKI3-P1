@@ -28,8 +28,12 @@ country_to_continent = {
     'United States': 'North America', 'Uzbekistan': 'Asia'
 }
 
-# Læs din CSV-fil+
-df = pd.read_csv(r'Energi_Data.csv')
+# Læs din CSV-fil
+df = pd.read_csv(r'CSV_files/Energi_Data.csv')
+
+# Gem en kopi af hele datasættet som world_data.csv
+df.to_csv('world_data.csv', index=False)
+print(f"Data for hele verden gemt i filen: world_data.csv")
 
 # Tilføj en kolonne til DataFrame, der repræsenterer kontinenter
 df['continent'] = df['country'].map(country_to_continent)
