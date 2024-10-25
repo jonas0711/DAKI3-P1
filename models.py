@@ -10,9 +10,27 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 def linearregression():
     '''linear regression'''
+    data = pd.read_csv(DATA_FILE)
+
+    # Udvælger features
+    selected_data = features.select_data(data)
+
+    # Opdeling i train og test data
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+
+    X_train, X_test = features.scaler_data(X_train, X_test)
 
 def lassoregression():
     '''Lasso regression'''
+    data = pd.read_csv(DATA_FILE)
+
+    # Udvælger features
+    selected_data = features.select_data(data)
+
+    # Opdeling i train og test data
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+
+    X_train, X_test = features.scaler_data(X_train, X_test)
 
 def randomforestregression():
     # Hent datasæt
