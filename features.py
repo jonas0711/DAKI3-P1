@@ -7,10 +7,50 @@ import json
 from kontrolcenter import *
 
 
-def select_data(dataset):
+def analyze_missing_data(dataset):
+    '''Analyserer manglende data i datasættet'''
+    # Beregn antal manglende værdier og procent for hver kolonne
+    missing_values = dataset.isnull().sum()
+    missing_percent = (missing_values / len(dataset) * 100).round(2)
+    
+    # Lav en DataFrame med resultaterne
+    missing_info = pd.DataFrame({
+        'Antal_manglende': missing_values,
+        'Procent_manglende': missing_percent,
+        'Antal_unikke': dataset.nunique(),
+        'Datatype': dataset.dtypes
+    })
+    
+    # Sorter efter procent manglende værdier (højeste først)
+    missing_info = missing_info.sort_values('Procent_manglende', ascending=False)
+    
+    # Print kolonner med manglende værdier
+    print("\nKolonner med manglende værdier:")
+    missing_columns = missing_info[missing_info['Antal_manglende'] > 0]
+    pd.set_option('display.max_rows', None)  # Vis alle rækker
+    pd.set_option('display.max_columns', None)  # Vis alle kolonner
+    pd.set_option('display.width', None)  # Undgå tekstombrydning
+    print(missing_columns)
+    
+    # Print kolonner uden manglende værdier
+    print("\nKolonner uden manglende værdier:")
+    complete_columns = missing_info[missing_info['Antal_manglende'] == 0]
+    print(complete_columns)
+    
+    # Nulstil display indstillinger
+    pd.reset_option('display.max_rows')
+    pd.reset_option('display.max_columns')
+    pd.reset_option('display.width')
+    
+    return missing_info
+
+def select_data(dataset=None):
     '''Selecting features in the dataset'''
     if dataset is None:
         dataset = pd.read_csv(DATA_FILE)
+
+    # Rens kolonnenavne for ekstra semikoloner og mellemrum
+    dataset.columns = dataset.columns.str.replace(';', '').str.strip()
 
     # Erstat '\n' og mellemrum med underscore i alle kolonnenavne
     dataset.columns = dataset.columns.str.replace('\n', ' ').str.replace(' ', '_')
@@ -21,6 +61,14 @@ def select_data(dataset):
     features = feature_schema[FEATURES_SELECTED]
 
     target = "Value_co2_emissions_kt_by_country"
+
+    ##print("\nDatasæt information:")
+    ##print(f"Antal rækker: {len(dataset)}")
+    ##print(f"Antal kolonner: {len(dataset.columns)}")
+    
+    # Analysér manglende data
+    ##print("\nAnalyse af manglende data:")
+    ##missing_info = analyze_missing_data(dataset)
 
     # Fjern rækker med manglende værdier for både features og target
     end_data = dataset[features + [target]].dropna()
@@ -66,3 +114,5 @@ def scaler_data(X_train, X_test):
 
     return X_train_normalized, X_test_normalized
 
+if __name__ == '__main__':
+    select_data()
