@@ -57,7 +57,6 @@ def lassoregression():
     print(f"R² score (accuracy): {r2}")
     print(f"Root Mean Squared Error (RMSE): {rmse}")
 
-
 def randomforestregression():
     # Hent datasæt
     data = pd.read_csv(DATA_FILE)
