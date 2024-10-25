@@ -40,5 +40,22 @@
         "renewables_share_energy", 
         "solar_share_energy", 
         "coal_share_energy"
+    ],
+
+    "features_original": [
+        "country",
+        "year",
+        "Access_to_electricity_(%_of_population)",
+        "Electricity_from_fossil_fuels_(TWh)",
+        "Electricity_from_nuclear_(TWh)",
+        "Electricity_from_renewables_(TWh)",
+        "Low-carbon_electricity_(%_electricity)",
+        "Primary_energy_consumption_per_capita_(kWh/person)",
+        "Renewables_(%_equivalent_primary_energy)",
+        "Density_(P/Km2)",
+        "Land_Area(Km2)",
+        "gdp_growth",
+        "gdp_per_capita"
     ]
+
 }
