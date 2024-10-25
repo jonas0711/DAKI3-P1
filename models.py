@@ -1,4 +1,4 @@
-from globale_variabler import *
+from kontrolcenter import *
 import features
 import joblib
 import pandas as pd
@@ -44,7 +44,7 @@ def gradientboost():
     X_train, X_test = features.scaler_data(X_train, X_test)
 
     model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
-
+   
     # Træner modellen
     model.fit(X_train, y_train)
 

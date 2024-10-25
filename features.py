@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 import numpy as np
 import json
-from globale_variabler import *
+from kontrolcenter import *
 
 
 def select_data(dataset):
