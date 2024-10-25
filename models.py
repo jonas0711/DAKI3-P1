@@ -73,21 +73,20 @@ def randomforestregression():
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-
-    # Få feature importance
     feature_importances = model.feature_importances_
 
-    with open('udvalgte_features.json', 'r') as file:
-        feature_schema = json.load(file)
+    feature_names = X_train.columns.tolist()
     
-    # Lav en DataFrame for bedre oversigt
-    importance_df = pd.DataFrame({
-        'Feature': feature_schema[FEATURES_SELECTED],
-        'Importance': feature_importances
-    })
+    if len(feature_names) == len(feature_importances):
+        importance_df = pd.DataFrame({
+            'Feature': feature_names,
+            'Importance': feature_importances
+        })
 
-    # Sorter efter vigtighed (højeste først)
-    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+        importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+        print("\nFeatures importance:")
+        print(importance_df)
 
     # Udskriv resultatet
     print("\nFeatures importance:")
