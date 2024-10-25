@@ -23,7 +23,7 @@ with open('udvalgte_features.json', 'r') as file:
 
 features = feature_schema[FEATURES_SELECTED]
 features.remove('country')
-features.remove('continent')
+##features.remove('continent')
 
 target = "Value_co2_emissions_kt_by_country"
 
@@ -44,3 +44,13 @@ plt.figure(figsize=(12,10))
 sns.heatmap(end_data.corr(), annot=True, cmap="magma", fmt='.2f')
 plt.title('Correlation map')
 plt.show()
+
+print(end_data.corr())
+
+# Efter den eksisterende kode i correlation.py, tilføj:
+
+# Beregn korrelation med target variabel
+target_correlations = end_data.corr()[target].sort_values(ascending=False)
+
+print("\nKorrelationer med CO2-udledning (sorteret):")
+print(target_correlations)
