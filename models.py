@@ -9,7 +9,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
-from sklearn.svm import SVR
 import json
 
 def linearregression():
@@ -57,6 +56,7 @@ def lassoregression():
     print("Lasso regression")
     print(f"R² score (accuracy): {r2}")
     print(f"Root Mean Squared Error (RMSE): {rmse}")
+
 
 def randomforestregression():
     # Hent datasæt
@@ -151,4 +151,4 @@ def supportvector():
     print(f"Root Mean Squared Error (RMSE): {rmse}") 
 
 if __name__ == "__main__":
-    supportvector()
+    randomforestregression()
