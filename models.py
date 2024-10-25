@@ -103,17 +103,22 @@ def randomforestregression():
     if len(feature_names) == len(feature_importances):
         importance_df = pd.DataFrame({
             'Feature': feature_names,
-            'Importance': feature_importances
+            'Importance (%)': feature_importances * 100  # Konverter til procent
         })
 
-        importance_df = importance_df.sort_values(by='Importance', ascending=False)
+        # Sorterer efter vigtighed (højest til lavest) og afrunder til 2 decimaler
+        importance_df['Importance (%)'] = importance_df['Importance (%)'].round(2)
+        importance_df = importance_df.sort_values(by='Importance (%)', ascending=False)
+        
+        # Indstiller display options for at vise alle rækker
+        pd.set_option('display.max_rows', None)
 
-        print("\nFeatures importance:")
+        print("\nFeatures importance (i procent):")
         print(importance_df)
+        
+        # Nulstiller display options
+        pd.reset_option('display.max_rows')
 
-    # Udskriv resultatet
-    print("\nFeatures importance:")
-    print(importance_df)
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
     r2 = r2_score(y_test, y_pred)
@@ -175,4 +180,4 @@ def supportvector():
     print(f"Root Mean Squared Error (RMSE): {rmse}") 
 
 if __name__ == "__main__":
-    ridgeregression()
+    randomforestregression()

@@ -73,12 +73,13 @@ def select_data(dataset=None):
     # Fjern rækker med manglende værdier for både features og target
     end_data = dataset[features + [target]].dropna()
 
-    # Kontroller om 'country'-kolonnen er til stede, før du udfører one-hot encoding
-    if 'country' in end_data.columns:
-        # Konverter kategoriske data til numeriske værdier (One-hot encoding for "country")
-        end_data = pd.get_dummies(end_data, columns=["country"])
-    else:
-        print("Kolonnen 'country' findes ikke i datasættet.")
+    # Liste over kategoriske kolonner der skal encoding
+    categorical_columns = ['country', 'continent']
+    
+    # Udfør one-hot encoding på de kategoriske kolonner der findes i datasættet
+    for col in categorical_columns:
+        if col in end_data.columns:
+            end_data = pd.get_dummies(end_data, columns=[col], prefix=col)
 
     # Gem de opdaterede features efter one-hot encoding (de oprindelige + one-hot encoded kolonner)
     final_features = end_data.drop(columns=[target]).columns.tolist()
