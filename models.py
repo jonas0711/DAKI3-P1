@@ -69,11 +69,8 @@ def randomforestregression():
     # Opdeling i train og test data
     X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
 
-    # Scalering af data --> Behøver ikke at være scaleret
-    #X_train = features.scaler_data()
-
     # Definerer modellen & træning
-    model = RandomForestRegressor()
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
 
@@ -85,7 +82,7 @@ def randomforestregression():
     
     # Lav en DataFrame for bedre oversigt
     importance_df = pd.DataFrame({
-        'Feature': feature_schema['features_1'],
+        'Feature': feature_schema[FEATURES_SELECTED],
         'Importance': feature_importances
     })
 
@@ -93,6 +90,7 @@ def randomforestregression():
     importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
     # Udskriv resultatet
+    print("\nFeatures importance:")
     print(importance_df)
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
