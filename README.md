@@ -1,117 +1,147 @@
 # CO2-Udledning Prognosemodel - En Guide for Begyndere
 
-Dette projekt er lavet til at forudsige hvor meget CO2 forskellige lande udleder. Tænk på det som en avanceret lommeregner, der kan gætte fremtidige CO2-udledninger baseret på forskellige informationer om landet.
+Dette projekt er udviklet til at forudsige CO2-udledninger på tværs af forskellige lande og kontinenter. Projektet bruger maskinlæringsmodeller til at analysere historiske data og lave fremtidige prognoser baseret på forskellige samfunds- og energifaktorer.
 
 ## Hvad Kan Programmet?
 
 Programmet kan:
-- Forudsige hvor meget CO2 et land vil udlede
-- Lære fra historiske data (ligesom når du lærer af erfaring)
-- Tage højde for mange forskellige faktorer som påvirker CO2-udledning
+- Forudsige CO2-udledninger for forskellige lande og kontinenter
+- Analysere sammenhænge mellem forskellige faktorer og CO2-udledning
+- Sammenligne forskellige maskinlæringsmodellers præstationer
+- Visualisere korrelationer mellem forskellige features
+- Opdele og analysere data på kontinentbasis
 
 ## Hvordan Virker Det?
 
-### Variabler - Vores "Kontrolpanel"
-I filen `globale_variabler.py` har vi samlet alle de indstillinger, som vi let kan ændre. Det fungerer som et kontrolpanel, hvor du kan:
+### Kontrolcenter - Vores "Kommandocentral"
+I filen `kontrolcenter.py` har vi samlet de centrale konfigurationsvariabler:
 
 ```python
-CONTINENT = 'Europe'  # Her vælger du hvilket kontinent du vil undersøge
-DATA_FILE = f"CSV_files/{CONTINENT}_data.csv"  # Her finder programmet den rigtige datafil
-YEAR_SPLIT = 2009  # Her bestemmer du, hvilke år der skal bruges til træning
+CONTINENT = 'world'  # Vælg mellem 'world' eller specifikt kontinent
+DATA_FILE = f"CSV_files/{CONTINENT}_data.csv"  # Automatisk valg af datafil
+MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"  # Navnet på den gemte model
+FEATURES_SELECTED = "features_psb"  # Hvilke features der skal bruges
+YEAR_SPLIT = 2009  # Skilleår mellem trænings- og testdata
 ```
 
-Dette gør det nemt at:
-- Skifte mellem forskellige kontinenter (f.eks. 'Europe', 'Asia', 'Africa')
-- Bruge forskellige datasæt
-- Ændre hvilke år vi træner modellen med
-
-Det er ligesom at have forskellige opskrifter i en kogebog - du kan let ændre ingredienserne (data) og fremgangsmåden (årene), uden at skulle omskrive hele opskriften.
-
 ### Data Vi Bruger
-Programmet kigger på mange forskellige ting for at gætte CO2-udledningen:
-- Hvor mange mennesker der bor i landet (befolkningstæthed)
-- Hvor rigt landet er (BNP-vækst)
-- Hvor meget strøm landet bruger
-- Hvor meget vedvarende energi landet bruger (som sol og vind)
-- Og mange andre faktorer
+Programmet analyserer en bred vifte af faktorer:
+- Befolkningstæthed og befolkningstal
+- BNP og økonomisk vækst
+- Energiforbrug og -produktion
+- Vedvarende energiandel
+- Elektricitetsproduktion fra forskellige kilder
+- Drivhusgasudledninger
+- Geografisk placering (kontinent)
 
-## Mappestruktur - Hvor Ligger Hvad?
-
-Tænk på projektets filer som forskellige værktøjer i en værktøjskasse:
+## Projektstruktur
 
 ```
 Projektmappe/
-├── CSV_files/               <- Her ligger vores data (som Excel-filer, bare i et andet format)
-│   └── Europa_data.csv     <- Data for europæiske lande
-├── features.py             <- Håndterer vores data (som en køkkenassistent der forbereder ingredienser)
-├── models.py               <- Vores "hjerne" der lærer og forudsiger (som en kok der laver maden)
-├── globale_variabler.py    <- Vores kontrolpanel (hvor vi justerer vores indstillinger)
-└── udvalgte_features.json  <- Liste over hvilke informationer vi bruger (som en indkøbsliste)
+├── CSV_files/               <- Datamapper med CSV-filer for hvert kontinent
+├── kontrolcenter.py        <- Central konfigurationsfil
+├── correlation.py          <- Analyserer korrelationer mellem features
+├── features.py            <- Håndterer databehandling og feature selection
+├── models.py              <- Implementerer forskellige ML-modeller
+├── opdel_i_kontinenter.py <- Opdeler data efter kontinenter
+└── udvalgte_features.json <- Definition af feature-sæt
 ```
+
+## Modeller i Projektet
+
+Projektet inkluderer flere forskellige maskinlæringsmodeller:
+1. Linear Regression
+2. Lasso Regression
+3. Ridge Regression
+4. Random Forest Regression
+5. Gradient Boosting Regression
+6. Support Vector Regression
 
 ## Sådan Kommer Du I Gang
 
 ### 1. Forberedelse
-Først skal du have installeret nogle værktøjer på din computer:
-- Python (tænk på det som køkkenet)
-- Nogle ekstra Python-pakker (som ekstra køkkenudstyr):
-  - pandas (til at håndtere data)
-  - scikit-learn (til at lave forudsigelser)
-  - numpy (til matematiske udregninger)
-  - joblib (til at gemme vores trænet model)
+Du skal have følgende installeret:
+- Python 3.x
+- Nødvendige Python-pakker:
+  - pandas (databehandling)
+  - scikit-learn (maskinlæring)
+  - numpy (numeriske beregninger)
+  - joblib (gem/indlæs modeller)
+  - matplotlib (visualisering)
+  - seaborn (visualisering)
+
+Installation af pakker:
+```bash
+pip install pandas scikit-learn numpy joblib matplotlib seaborn
+```
 
 ### 2. Opsætning
-1. Download alle filerne til din computer
-2. Åbn `globale_variabler.py` i et program der kan redigere tekst
-3. Her kan du ændre `CONTINENT` til det kontinent du vil undersøge
+1. Klon eller download projektet
+2. Åbn `kontrolcenter.py`
+3. Vælg ønsket kontinent og andre indstillinger
 
-### 3. Kør Programmet
-1. Åbn din computers terminal eller kommandoprompt
-2. Gå til mappen med filerne
-3. Skriv: `python models.py`
+### 3. Kør Analyserne
 
-## Hvad Sker Der Bag Kulisserne?
+For at køre korrelationsanalyse:
+```bash
+python correlation.py
+```
 
-1. **Dataforberedelse** (`features.py`)
-   - Programmet læser data fra CSV-filen
-   - Renser data for fejl og mangler
-   - Forbereder data så modellen kan forstå det
+For at træne og teste modeller:
+```bash
+python models.py
+```
+
+For at opdele data i kontinenter:
+```bash
+python opdel_i_kontinenter.py
+```
+
+## Arbejdsflow
+
+1. **Dataopdeling** (`opdel_i_kontinenter.py`)
+   - Opdeler det globale datasæt i kontinentspecifikke datasæt
+   - Tilføjer kontinentinformation til dataene
+
+2. **Feature Selection** (`features.py`)
+   - Håndterer missing values
+   - Normaliserer data
+   - Udfører one-hot encoding på kategoriske variable
    
-2. **Træning** (`models.py`)
-   - Modellen lærer fra de gamle data (før 2009)
-   - Som at lære af historien for at blive bedre til at gætte fremtiden
+3. **Korrelationsanalyse** (`correlation.py`)
+   - Visualiserer korrelationer mellem features
+   - Identificerer de vigtigste faktorer for CO2-udledning
 
-3. **Test og Resultater**
-   - Modellen prøver at gætte CO2-udledninger for nyere år (efter 2009)
-   - Vi tjekker hvor god modellen er til at gætte rigtigt
+4. **Modeltræning** (`models.py`)
+   - Træner forskellige modeller på historisk data
+   - Evaluerer modellernes præstation
+   - Gemmer den bedste model til senere brug
 
-## Resultater
+## Resultater og Evaluering
 
-Når programmet er færdigt, får du:
-- En fil med den trænede model (som en erfaren kok der har lært opskriften)
-- Information om hvor præcise forudsigelserne er
-- Mulighed for at bruge modellen til at forudsige fremtidige CO2-udledninger
+Programmet evaluerer modellerne på to måder:
+- R² score (accuracy): Hvor god modellen er til at forklare variationen i data
+- RMSE (Root Mean Squared Error): Den gennemsnitlige fejl i forudsigelserne
 
-## Har Du Problemer?
+## Fejlfinding
 
 Almindelige problemer og løsninger:
-- Hvis programmet ikke kan finde din datafil: Tjek at den ligger i CSV_files mappen
-- Hvis du får fejl om manglende pakker: Installer dem med `pip install pakkenavn`
-- Hvis resultaterne ser mærkelige ud: Tjek at din data er i det rigtige format
+- "ModuleNotFoundError": Installer den manglende pakke med `pip install pakkenavn`
+- "FileNotFoundError": Tjek at alle CSV-filer er i CSV_files mappen
+- "KeyError": Kontroller at feature-navnene i udvalgte_features.json matcher dem i din CSV-fil
 
-## Vil Du Eksperimentere?
+## Eksperimenter og Tilpasninger
 
-Prøv at:
-1. Ændre `CONTINENT` til forskellige kontinenter
-2. Justere `YEAR_SPLIT` til forskellige år
-3. Se hvordan forskellige indstillinger påvirker resultaterne
+Du kan eksperimentere med:
+1. Forskellige feature-sæt i udvalgte_features.json
+2. Forskellige maskinlæringsmodeller i models.py
+3. Forskellige år for trænings/test-split
+4. Andre parametre i modellerne
 
-Husk: Der er ingen fare ved at eksperimentere - programmet ændrer ikke i dine originale data!
+## Ordliste
 
-## Begreber For Begyndere
-
-- **CSV-fil**: En simpel måde at gemme data på (som et Excel-ark)
-- **Model**: Et computerprogram der kan lære mønstre og lave forudsigelser
-- **Træning**: Når modellen lærer fra eksisterende data
-- **Variabler**: Værdier vi let kan ændre for at teste forskellige ting
-- **Features**: De forskellige informationer vi bruger til at lave forudsigelser
+- **Feature**: En specifik egenskab eller måling vi bruger til at lave forudsigelser
+- **One-hot encoding**: Konvertering af kategoriske data til numerisk format
+- **R² score**: Et mål for hvor god modellen er (0-1, hvor 1 er perfekt)
+- **RMSE**: Et mål for den gennemsnitlige fejl i forudsigelserne
+- **Normalisering**: Proces der gør forskellige features sammenlignelige
