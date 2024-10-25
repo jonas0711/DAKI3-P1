@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 def randomforestregression():
     # Hent datasæt
-    data = pd.read_csv(r'Energi_Data.csv')
+    data = pd.read_csv(DATA_FILE)
 
     # Udvælger features
     selected_data = features.select_data(data)
