@@ -47,7 +47,7 @@ def lassoregression():
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
-    model = Lasso()
+    model = Lasso(random_state=39)
     model.fit(X_train, y_train)
 
     # Forudsigelser på testdata
@@ -70,7 +70,7 @@ def ridgeregression():
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
-    model = Ridge()
+    model = Ridge(random_state=39)
     model.fit(X_train, y_train)
 
     # Forudsigelser på testdata
@@ -93,7 +93,7 @@ def randomforestregression():
     X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
 
     # Definerer modellen & træning
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model = RandomForestRegressor(n_estimators=100, random_state=39)
     model.fit(X_train, y_train)
 
     feature_importances = model.feature_importances_
@@ -134,7 +134,7 @@ def gradientboost():
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
-    model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+    model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=39)
    
     # Træner modellen
     model.fit(X_train, y_train)
