@@ -18,8 +18,6 @@ def select_data(dataset):
     with open('udvalgte_features.json', 'r') as file:
         feature_schema = json.load(file)
     
-    print(feature_schema)  # Udskriv hele ordbogen
-    print(FEATURES_SELECTED)
     features = feature_schema[FEATURES_SELECTED]
 
     target = "Value_co2_emissions_kt_by_country"
