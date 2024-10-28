@@ -1,52 +1,125 @@
 import pandas as pd
+import numpy as np
 
-# Opret en dictionary for kontinenter som før
-country_to_continent = {
-    'Algeria': 'Africa', 'Argentina': 'South America', 'Australia': 'Oceania', 
-    'Austria': 'Europe', 'Azerbaijan': 'Asia', 'Bangladesh': 'Asia', 
-    'Belarus': 'Europe', 'Belgium': 'Europe', 'Brazil': 'South America', 
-    'Bulgaria': 'Europe', 'Canada': 'North America', 'Chile': 'South America', 
-    'China': 'Asia', 'Colombia': 'South America', 'Croatia': 'Europe', 
-    'Cyprus': 'Europe', 'Czechia': 'Europe', 'Denmark': 'Europe', 
-    'Ecuador': 'South America', 'Egypt': 'Africa', 'Estonia': 'Europe', 
-    'Finland': 'Europe', 'France': 'Europe', 'Germany': 'Europe', 
-    'Greece': 'Europe', 'Hungary': 'Europe', 'Iceland': 'Europe', 
-    'India': 'Asia', 'Indonesia': 'Asia', 'Iraq': 'Asia', 'Ireland': 'Europe', 
-    'Israel': 'Asia', 'Italy': 'Europe', 'Japan': 'Asia', 'Kazakhstan': 'Asia', 
-    'Kuwait': 'Asia', 'Latvia': 'Europe', 'Lithuania': 'Europe', 
-    'Luxembourg': 'Europe', 'Malaysia': 'Asia', 'Mexico': 'North America', 
-    'Morocco': 'Africa', 'Netherlands': 'Europe', 'New Zealand': 'Oceania', 
-    'North Macedonia': 'Europe', 'Norway': 'Europe', 'Oman': 'Asia', 
-    'Pakistan': 'Asia', 'Peru': 'South America', 'Philippines': 'Asia', 
-    'Poland': 'Europe', 'Portugal': 'Europe', 'Qatar': 'Asia', 
-    'Romania': 'Europe', 'Saudi Arabia': 'Asia', 'Singapore': 'Asia', 
-    'Slovakia': 'Europe', 'Slovenia': 'Europe', 'South Africa': 'Africa', 
-    'Spain': 'Europe', 'Sri Lanka': 'Asia', 'Sweden': 'Europe', 
-    'Switzerland': 'Europe', 'Thailand': 'Asia', 'Trinidad and Tobago': 'North America', 
-    'Turkey': 'Europe', 'Turkmenistan': 'Asia', 'Ukraine': 'Europe', 
-    'United Arab Emirates': 'Asia', 'United Kingdom': 'Europe', 
-    'United States': 'North America', 'Uzbekistan': 'Asia'
+# Opret en dictionary for clusters baseret på vores analyse
+country_to_cluster = {
+    # Udviklingslande
+    'Belarus': 'developing', 'Bulgaria': 'developing', 
+    'Croatia': 'developing', 'Estonia': 'developing', 
+    'Hungary': 'developing', 'Latvia': 'developing', 
+    'Lithuania': 'developing', 'North Macedonia': 'developing', 
+    'Poland': 'developing', 'Romania': 'developing', 
+    'Ukraine': 'developing', 'Azerbaijan': 'developing', 
+    'India': 'developing', 'Indonesia': 'developing', 
+    'Iraq': 'developing', 'Israel': 'developing',
+    'Kazakhstan': 'developing', 'Malaysia': 'developing', 
+    'Pakistan': 'developing', 'Philippines': 'developing',
+    'Thailand': 'developing', 'Uzbekistan': 'developing',
+    'Argentina': 'developing', 'Chile': 'developing', 
+    'Colombia': 'developing', 'Ecuador': 'developing', 
+    'Mexico': 'developing', 'Peru': 'developing',
+    'Algeria': 'developing', 'Morocco': 'developing', 
+    'South Africa': 'developing',
+    
+    # Ressourcerige
+    'Norway': 'resource_rich', 'Sweden': 'resource_rich', 
+    'Iceland': 'resource_rich', 'Canada': 'resource_rich',
+    'Trinidad and Tobago': 'resource_rich',
+    
+    # Udviklede
+    'Austria': 'developed', 'Belgium': 'developed', 
+    'Denmark': 'developed', 'France': 'developed', 
+    'Germany': 'developed', 'Greece': 'developed', 
+    'Ireland': 'developed', 'Italy': 'developed', 
+    'Luxembourg': 'developed', 'Netherlands': 'developed',
+    'Portugal': 'developed', 'Slovenia': 'developed', 
+    'Spain': 'developed', 'Switzerland': 'developed',
+    'United Kingdom': 'developed', 'Australia': 'developed',
+    'Japan': 'developed', 'Finland': 'developed', 
+    'New Zealand': 'developed',
+    
+    # Storskala
+    'China': 'large_scale', 'United States': 'large_scale'
 }
 
-# Læs din CSV-fil
-df = pd.read_csv(r'CSV_files/Energi_Data.csv')
+def clean_country_name(country):
+    """Renser landenavne for eventuelle ekstra data"""
+    if ',' in str(country):
+        return country.split(',')[0]
+    return country
 
-# Tilføj en kolonne til DataFrame, der repræsenterer kontinenter
-df['continent'] = df['country'].map(country_to_continent)
+def process_data():
+    """
+    Indlæser, processerer og gemmer data i separate filer for hver cluster
+    """
+    # Læs CSV-filen
+    print("Indlæser datasæt...")
+    df = pd.read_csv(r'CSV_files/Energi_Data.csv')
 
-# Gem en kopi af hele datasættet som world_data.csv i CSV_files mappen
-df.to_csv('CSV_files/world_data.csv', index=False)
-print(f"Data for hele verden gemt i filen: CSV_files/world_data.csv")
+    # Rens landenavne
+    df['country'] = df['country'].apply(clean_country_name)
 
-# Loop igennem hver unikke kontinent og gem data til en separat CSV-fil
-for continent in df['continent'].unique():
-    # Filtrer data for det pågældende kontinent
-    df_continent = df[df['continent'] == continent]
-    
-    # Opret et filnavn baseret på kontinentets navn
-    file_name = f"CSV_files/{continent}_data.csv"
-    
-    # Gem data som CSV-fil
-    df_continent.to_csv(file_name, index=False)
-    
-    print(f"Data for {continent} gemt i filen: {file_name}")
+    # Tilføj en kolonne til DataFrame, der repræsenterer clusters
+    df['cluster'] = df['country'].map(country_to_cluster)
+
+    # Gem en kopi af hele datasættet som world_data.csv
+    df.to_csv('CSV_files/world_data.csv', index=False)
+    print(f"Data for hele verden gemt i filen: CSV_files/world_data.csv")
+
+    # Find lande der mangler cluster-tildeling
+    missing_countries = df[df['cluster'].isna()]['country'].unique()
+    if len(missing_countries) > 0:
+        print("\nADVARSEL: Følgende lande mangler cluster-tildeling:")
+        for country in sorted(missing_countries):
+            if pd.notna(country):  # Tjek om landet ikke er NaN
+                print(f"'{country}'")
+
+    # Definér cluster rækkefølge
+    cluster_order = ['developing', 'resource_rich', 'developed', 'large_scale']
+
+    # Loop igennem hver cluster i den definerede rækkefølge
+    for cluster in cluster_order:
+        # Filtrer data for den pågældende cluster
+        df_cluster = df[df['cluster'] == cluster]
+        
+        if len(df_cluster) > 0:  # Kun hvis der er data for denne cluster
+            # Opret et filnavn baseret på clusterets navn
+            file_name = f"CSV_files/cluster_{cluster}_data.csv"
+            
+            # Gem data som CSV-fil
+            df_cluster.to_csv(file_name, index=False)
+            
+            # Print information om cluster
+            print(f"\nCluster: {cluster}")
+            unique_countries = sorted(df_cluster['country'].unique())
+            print(f"Antal lande: {len(unique_countries)}")
+            print(f"Antal datapunkter: {len(df_cluster)}")
+            print(f"Data gemt i: {file_name}")
+            print("Inkluderede lande:")
+            print(", ".join(unique_countries))
+
+def print_usage_guide():
+    """
+    Printer en guide til hvordan man bruger de genererede filer med kontrolcenter.py
+    """
+    print("\nBrug af filer med kontrolcenter.py:")
+    print("I kontrolcenter.py kan du nu bruge følgende indstillinger:")
+    print("\nFor alle lande:")
+    print('CONTINENT = "world"')
+    print('DATA_FILE = "CSV_files/world_data.csv"')
+    print("\nFor udviklingslande:")
+    print('CONTINENT = "developing"')
+    print('DATA_FILE = "CSV_files/cluster_developing_data.csv"')
+    print("\nFor ressourcerige lande:")
+    print('CONTINENT = "resource_rich"')
+    print('DATA_FILE = "CSV_files/cluster_resource_rich_data.csv"')
+    print("\nFor udviklede lande:")
+    print('CONTINENT = "developed"')
+    print('DATA_FILE = "CSV_files/cluster_developed_data.csv"')
+    print("\nFor storskala lande:")
+    print('CONTINENT = "large_scale"')
+    print('DATA_FILE = "CSV_files/cluster_large_scale_data.csv"')
+
+if __name__ == "__main__":
+    process_data()
+    print_usage_guide()
