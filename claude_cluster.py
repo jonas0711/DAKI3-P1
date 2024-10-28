@@ -26,7 +26,10 @@ def load_and_prepare_data():
     ]
 
     print("\nForbereder data...")
+    # Grupperer land og laver gns på "Clustering_features" og sætter det som index
     country_profiles = data.groupby('country')[clustering_features].mean().reset_index()
+
+    # Dropper den kolonne med manglende data
     country_profiles = country_profiles.dropna()
     print(f"Antal lande med komplette data: {len(country_profiles)}")
 
@@ -86,7 +89,7 @@ def plot_cluster_characteristics(country_profiles, clustering_features, n_cluste
     cluster_labels = kmeans.fit_predict(features_scaled)
     country_profiles[f'Cluster_{n_clusters}'] = cluster_labels
 
-    # Plot heatmap
+    # Plot heatmap hvor vi ser de gennemsnitlige værdier for hver cluster for at kunne sammenligne indellinger for clustrene
     plt.figure(figsize=(15, 8))
     plt.title(f'Karakteristika for {n_clusters} clusters')
     cluster_means = country_profiles.groupby(f'Cluster_{n_clusters}')[clustering_features].mean()
