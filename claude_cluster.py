@@ -71,7 +71,10 @@ def find_best_clusters(silhouette_scores, min_clusters):
     """
     Finder de tre bedste antal clusters baseret på silhouette score
     """
+    # Sortere silhouette_scores fra lavest til højest og slicer til de 3 højeste
     top_3_indices = np.argsort(silhouette_scores)[-3:][::-1]
+
+    # Finder det faktiske index nr.
     top_3_n_clusters = [i + min_clusters for i in top_3_indices]
     
     print("\nTop 3 bedste antal clusters baseret på silhouette score:")
@@ -115,6 +118,7 @@ def plot_scatter_clusters(country_profiles, n_clusters):
     )
     
     for i, country in enumerate(country_profiles['country']):
+        # iloc finder værdi i dataframe baseret på position/index
         plt.annotate(country, (
             country_profiles['Primary energy consumption per capita (kWh/person)'].iloc[i],
             country_profiles['renewables_share_energy'].iloc[i]
@@ -128,7 +132,8 @@ def plot_scatter_clusters(country_profiles, n_clusters):
 
 def print_cluster_details(country_profiles, clustering_features, n_clusters):
     """
-    Printer detaljeret information om hver cluster
+    Printer detaljeret information om hver cluster herunder lande, gennemsnitlige featur værdier for klusteret
+    Altså det der kendetegner de fundne klustre
     """
     print(f"\nDetaljer for {n_clusters} clusters:")
     for cluster in range(n_clusters):
