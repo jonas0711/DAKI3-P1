@@ -12,8 +12,8 @@ from sklearn.linear_model import Lasso, Ridge
 from sklearn.svm import SVR
 import json
 
-def print_pred_output(y_test, y_pred, model_type):
-    '''Printing the results of the prediction'''
+def print_pred_metrics(y_test, y_pred, model_type):
+    '''Printing r2 and RMSE of the prediction'''
     r2 = r2_score(y_test, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
@@ -39,7 +39,8 @@ def linearregression():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
     
-    print_pred_output(y_test, y_pred, "Lineær regression")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Lineær regression")
     
 
 
@@ -61,7 +62,8 @@ def lassoregression():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
     
-    print_pred_output(y_test, y_pred, "Lasso regression")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Lasso regression")
 
 def ridgeregression():
     '''Rigde regression'''
@@ -81,7 +83,8 @@ def ridgeregression():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
 
-    print_pred_output(y_test, y_pred, "Rigde regression")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Rigde regression")
 
 
 def randomforestregression():
@@ -124,7 +127,8 @@ def randomforestregression():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
 
-    print_pred_output(y_test, y_pred, "Random forest regression")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Random forest regression")
 
 def gradientboost():
     '''Gradient Boosting Regressor model'''
@@ -146,7 +150,8 @@ def gradientboost():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
 
-    print_pred_output(y_test, y_pred, "Gradient Boosting Regressor")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Gradient Boosting Regressor")
 
     # Gemmer den trænede model til en fil
     joblib.dump(model, MODEL_FILENAME)
@@ -170,7 +175,8 @@ def supportvector():
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
 
-    print_pred_output(y_test, y_pred, "Support Vector Regression model")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Support Vector Regression model")
 
 if __name__ == "__main__":
     randomforestregression()
