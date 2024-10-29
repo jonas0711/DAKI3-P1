@@ -20,7 +20,7 @@ def linearregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -43,7 +43,7 @@ def lassoregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -66,7 +66,7 @@ def ridgeregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -90,7 +90,7 @@ def randomforestregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     # Definerer modellen & træning
     model = RandomForestRegressor(n_estimators=100, random_state=39)
@@ -135,7 +135,7 @@ def gradientboost():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -164,7 +164,7 @@ def supportvector():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
