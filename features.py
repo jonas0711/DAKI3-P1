@@ -60,8 +60,6 @@ def select_data(dataset=None):
     
     features = feature_schema[FEATURES_SELECTED]
 
-    target = "Value_co2_emissions_kt_by_country"
-
     ##print("\nDatasæt information:")
     ##print(f"Antal rækker: {len(dataset)}")
     ##print(f"Antal kolonner: {len(dataset.columns)}")
@@ -71,7 +69,7 @@ def select_data(dataset=None):
     ##missing_info = analyze_missing_data(dataset)
 
     # Fjern rækker med manglende værdier for både features og target
-    end_data = dataset[features + [target]].dropna()
+    end_data = dataset[features + [TARGET]].dropna()
 
     # Liste over kategoriske kolonner der skal encoding
     categorical_columns = ['country', 'continent']
@@ -82,7 +80,7 @@ def select_data(dataset=None):
             end_data = pd.get_dummies(end_data, columns=[col], prefix=col)
 
     # Gem de opdaterede features efter one-hot encoding (de oprindelige + one-hot encoded kolonner)
-    final_features = end_data.drop(columns=[target]).columns.tolist()
+    final_features = end_data.drop(columns=[TARGET]).columns.tolist()
 
     # Gem de anvendte feature-navne efter one-hot encoding
     joblib.dump(final_features, FEATURES_SELECTED)

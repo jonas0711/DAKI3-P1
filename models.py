@@ -12,6 +12,15 @@ from sklearn.linear_model import Lasso, Ridge
 from sklearn.svm import SVR
 import json
 
+def print_pred_metrics(y_test, y_pred, model_type):
+    '''Printing r2 and RMSE of the prediction'''
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print(f"Resultater {model_type}:")
+    print(f"R² score (accuracy): {r2}")
+    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
 def linearregression():
     '''linear regression'''
     data = pd.read_csv(DATA_FILE)
@@ -20,7 +29,7 @@ def linearregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -29,11 +38,11 @@ def linearregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Lineær regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Lineær regression")
+    
+
 
 def lassoregression():
     '''Lasso regression'''
@@ -43,7 +52,7 @@ def lassoregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -52,21 +61,19 @@ def lassoregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Lasso regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Lasso regression")
 
 def ridgeregression():
-    '''Lasso regression'''
+    '''Rigde regression'''
     data = pd.read_csv(DATA_FILE)
 
     # Udvælger features
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -75,11 +82,9 @@ def ridgeregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Rigde regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Rigde regression")
 
 
 def randomforestregression():
@@ -90,7 +95,7 @@ def randomforestregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     # Definerer modellen & træning
     model = RandomForestRegressor(n_estimators=100, random_state=39)
@@ -121,11 +126,9 @@ def randomforestregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Random forest regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Random forest regression")
 
 def gradientboost():
     '''Gradient Boosting Regressor model'''
@@ -135,7 +138,7 @@ def gradientboost():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -146,11 +149,9 @@ def gradientboost():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Gradient Boosting Regressor")
 
     # Gemmer den trænede model til en fil
     joblib.dump(model, MODEL_FILENAME)
@@ -164,7 +165,7 @@ def supportvector():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, "Value_co2_emissions_kt_by_country")
+    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -173,11 +174,9 @@ def supportvector():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Support Vector Regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}") 
+
+    # Printer r2 og rmse
+    print_pred_metrics(y_test, y_pred, "Support Vector Regression model")
 
 if __name__ == "__main__":
     randomforestregression()
