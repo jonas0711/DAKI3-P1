@@ -12,6 +12,15 @@ from sklearn.linear_model import Lasso, Ridge
 from sklearn.svm import SVR
 import json
 
+def print_pred_output(y_test, y_pred, model_type):
+    '''Printing the results of the prediction'''
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print(f"Resultater {model_type}:")
+    print(f"R² score (accuracy): {r2}")
+    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
 def linearregression():
     '''linear regression'''
     data = pd.read_csv(DATA_FILE)
@@ -29,11 +38,10 @@ def linearregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Lineær regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    
+    print_pred_output(y_test, y_pred, "Lineær regression")
+    
+
 
 def lassoregression():
     '''Lasso regression'''
@@ -52,14 +60,11 @@ def lassoregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Lasso regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    
+    print_pred_output(y_test, y_pred, "Lasso regression")
 
 def ridgeregression():
-    '''Lasso regression'''
+    '''Rigde regression'''
     data = pd.read_csv(DATA_FILE)
 
     # Udvælger features
@@ -75,11 +80,8 @@ def ridgeregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Rigde regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
+    print_pred_output(y_test, y_pred, "Rigde regression")
 
 
 def randomforestregression():
@@ -121,11 +123,8 @@ def randomforestregression():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Random forest regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+
+    print_pred_output(y_test, y_pred, "Random forest regression")
 
 def gradientboost():
     '''Gradient Boosting Regressor model'''
@@ -146,11 +145,8 @@ def gradientboost():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    print_pred_output(y_test, y_pred, "Gradient Boosting Regressor")
 
     # Gemmer den trænede model til en fil
     joblib.dump(model, MODEL_FILENAME)
@@ -173,11 +169,8 @@ def supportvector():
 
     # Forudsigelser på testdata
     y_pred = model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    print("Support Vector Regression")
-    print(f"R² score (accuracy): {r2}")
-    print(f"Root Mean Squared Error (RMSE): {rmse}") 
+
+    print_pred_output(y_test, y_pred, "Support Vector Regression model")
 
 if __name__ == "__main__":
     randomforestregression()
