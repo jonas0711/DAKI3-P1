@@ -21,6 +21,9 @@ def print_pred_metrics(y_test, y_pred, model_type):
     print(f"R² score (accuracy): {r2}")
     print(f"Root Mean Squared Error (RMSE): {rmse}")
 
+def ROC():
+    '''Laver roc-curve for modellerne'''
+
 def linearregression():
     '''linear regression'''
     data = pd.read_csv(DATA_FILE)
