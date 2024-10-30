@@ -151,29 +151,32 @@ def evaluate_clustering(data, labels, n_clusters):
     """
     Evaluerer clustering kvalitet med multiple metrics
     """
+    # Tjekker at alle lande ikke er i samme kluster
     if len(np.unique(labels)) <= 1:
         return -np.inf
     
-    # Beregn basis silhouette score
+    # Beregn basis silhouette score data = develempment_patterns
     silhouette = silhouette_score(data, labels)
     
     # Beregn cluster størrelse balance
-    cluster_sizes = np.array([sum(labels == i) for i in range(n_clusters)])
-    size_variation = np.std(cluster_sizes) / np.mean(cluster_sizes)
+    cluster_sizes = np.array([sum(labels == i) for i in range(n_clusters)]) # Hvor mange er hvert label er der
+    size_variation = np.std(cluster_sizes) / np.mean(cluster_sizes) # Variation i størrelsen på clusters
     
-    # Beregn cluster kompakthed
+    # Beregn cluster kompakthed for hver kluster
     cluster_densities = []
-    for i in range(n_clusters):
-        cluster_data = data[labels == i]
+    for i in range(n_clusters): # for hvert kluster beregnes:
+        cluster_data = data[labels == i] # develompment_patterns for hvert land med det label
         if len(cluster_data) > 1:
             # Beregn gennemsnitlig afstand til cluster centroid
             centroid = cluster_data.mean(axis=0)
             distances = np.linalg.norm(cluster_data - centroid, axis=1)
             cluster_densities.append(distances.mean())
     
+    # giver variationen af densitet mellem clusterne - tæt på 1 = tætheden er konsistent på tværs af klynger
     density_score = 1 - (np.std(cluster_densities) / np.mean(cluster_densities)) if cluster_densities else 0
     
-    # Kombiner scores med vægte
+    # Kombiner scores  af silhouettescore, size_variation (hvor stor variation på størrelse af clusters) og densityscore 
+    # ganges med hvor meget de skal vægtes
     combined_score = (
         silhouette * 0.5 +
         (1 - size_variation) * 0.3 +
@@ -196,7 +199,7 @@ def find_optimal_clusters(data, min_clusters=2, max_clusters=20):
         best_labels = None
         best_model = None
         
-        # Kør multiple initialiseringer for hver n_clusters
+        # Kør multiple initialiseringer for hver n_clusters for at finde de bedste centers
         for _ in range(5):
             kmeans = KMeans(n_clusters=n_clusters, random_state=42+_, n_init=10)
             labels = kmeans.fit_predict(data)
@@ -217,7 +220,7 @@ def find_optimal_clusters(data, min_clusters=2, max_clusters=20):
         
         print(f"Antal clusters: {n_clusters}, Score: {best_score:.3f}")
     
-    # Visualiser scores
+    # Visualiser scores --> scores = Kombiner scores  af silhouettescore, size_variation (hvor stor variation på størrelse af clusters) og densityscore ganges med hvor meget de skal vægtes
     plt.figure(figsize=(12, 6))
     plt.plot(range(min_clusters, max_clusters + 1), evaluation_scores, marker='o')
     plt.title('Cluster Evaluerings Score')
@@ -329,4 +332,4 @@ def analyze_development_clusters():
     return development_patterns, best_result
 
 if __name__ == "__main__":
-    development_patterns, best_clustering = analyze_development_clusters()
+    development_patterns, best_clustering = analyze_development_clusters()l
