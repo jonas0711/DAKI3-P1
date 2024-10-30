@@ -332,4 +332,4 @@ def analyze_development_clusters():
     return development_patterns, best_result
 
 if __name__ == "__main__":
-    development_patterns, best_clustering = analyze_development_clusters()l
+    development_patterns, best_clustering = analyze_development_clusters()
