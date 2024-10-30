@@ -18,33 +18,34 @@ def calculate_development_patterns(data, feature_columns):
     data = data.sort_values(['country', 'year'])
     patterns_dict = {}
 
-    for country in data['country'].unique():
+    for country in data['country'].unique(): # Gennemgår alle lande i datasættet
+        # Får alt data omkring bestemt land i 2000-2009 (2010-2020 sorteret fra i prepare_data())
         country_data = data[data['country'] == country]
         country_patterns = {}
 
-        for feature in feature_columns:
-            # Beregn år-til-år ændringer
+        for feature in feature_columns: # Gennemgår alle udvalgte features
+            # Beregn år-til-år ændringer for feature
             yearly_changes = country_data[feature].pct_change(fill_method=None) * 100
             
             # Beregn overordnet trend (lineær regression koefficient)
-            years = np.arange(len(country_data))
-            values = country_data[feature].values
+            years = np.arange(len(country_data)) # Længden af listen af lande, lavet om til tal 0-9
+            values = country_data[feature].values # Får værdierne for specifik feature
             if len(years) > 1:  # Sikrer at vi har nok data til regression
-                trend = np.polyfit(years, values, 1)[0]
+                trend = np.polyfit(years, values, 1)[0] # Lineær linje for at finde en hældning = trend
             else:
                 trend = 0
             
             # Beregn acceleration (ændring i ændringsrate)
             acceleration = yearly_changes.diff()
             
-            # Håndter NaN og inf værdier
+            # Håndter NaN og inf (kommer af division med 0) værdier erstatter med 0
             yearly_changes = yearly_changes.replace([np.inf, -np.inf], np.nan).fillna(0)
             acceleration = acceleration.replace([np.inf, -np.inf], np.nan).fillna(0)
             
-            # Beregn stabilitet i udvikling (normaliseret standardafvigelse)
-            stability = 1 - (yearly_changes.std() / (abs(yearly_changes.mean()) + 1e-6))
+            # Beregn standardafvigelse i udvikling (hvor meget den afviger fra gennemsnitsændringen) høj = stor variation, lav = stabilitet
+            stability = 1 - (yearly_changes.std() / (abs(yearly_changes.mean()) + 1e-6)) # abs = absolutte værdi (så ikke negativ), 1e-6 så ikke dividere med 0
             
-            # Beregn total procentvis ændring
+            # Beregn total procentvis ændring mellem featureværdi i 2000 og 2009
             if country_data[feature].iloc[0] != 0:
                 total_change = ((country_data[feature].iloc[-1] / 
                                country_data[feature].iloc[0] - 1) * 100)
@@ -61,6 +62,7 @@ def calculate_development_patterns(data, feature_columns):
                 f"{feature}_volatility": yearly_changes.std()
             })
         
+        # dict over dictornaries for hvert land, hvori der er trend, change, stability, acc osv. for alle features
         patterns_dict[country] = country_patterns
     
     patterns_df = pd.DataFrame.from_dict(patterns_dict, orient='index')
