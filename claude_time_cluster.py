@@ -108,9 +108,9 @@ def prepare_training_data():
     # Fladgør feature liste
     all_features = []
     for group in feature_groups.values():
-        all_features.extend(group['features'])
+        all_features.extend(group['features']) # tilgår listen af features i dic og lægger til all_features listen (uden nested loop)
     
-    # Valider features
+    # Valider features - fjerner features fra all_features, som ikke er i datasættet
     missing_features = [f for f in all_features if f not in data.columns]
     if missing_features:
         print(f"Advarsel: Følgende features mangler og vil blive udeladt: {missing_features}")
@@ -120,12 +120,12 @@ def prepare_training_data():
         all_features = [f for f in all_features if f not in missing_features]
     
     if not all_features:
-        raise ValueError("Ingen gyldige features tilbage efter validering")
+        raise ValueError("Ingen gyldige features tilbage efter validering") # Melder fejl hvis der ikke er tilgængelige features
     
-    # Beregn udviklingsmønstre
+    # Beregn udviklingsmønstre - funktion udskriver: dict over dictornaries for hvert land, hvori der er trend, change, stability, acc osv. for alle features
     development_patterns = calculate_development_patterns(train_data, all_features)
     
-    # Håndter manglende værdier
+    # Håndter manglende værdier NAN, dog gjort meget i cal_dev_patterns for at der ikke er --> så sjældne tilfælde
     imputer = SimpleImputer(strategy='mean')
     patterns_imputed = pd.DataFrame(
         imputer.fit_transform(development_patterns),
