@@ -39,7 +39,7 @@ def calculate_development_patterns(data, feature_columns):
             acceleration = yearly_changes.diff()
             
             # Håndter NaN og inf (kommer af division med 0) værdier erstatter med 0
-            yearly_changes = yearly_changes.replace([np.inf, -np.inf], np.nan).fillna(0)
+            yearly_changes = yearly_changes.replace([np.inf, -np.inf], np.nan).fillna(0) #Sørger for at første års data eksempelvis er 0
             acceleration = acceleration.replace([np.inf, -np.inf], np.nan).fillna(0)
             
             # Beregn standardafvigelse i udvikling (hvor meget den afviger fra gennemsnitsændringen) høj = stor variation, lav = stabilitet
@@ -108,41 +108,21 @@ def prepare_training_data():
     # Fladgør feature liste
     all_features = []
     for group in feature_groups.values():
-        all_features.extend(group['features']) # tilgår listen af features i dic og lægger til all_features listen (uden nested loop)
-    
-    # Valider features - fjerner features fra all_features, som ikke er i datasættet
-    missing_features = [f for f in all_features if f not in data.columns]
-    if missing_features:
-        print(f"Advarsel: Følgende features mangler og vil blive udeladt: {missing_features}")
-        # Fjern manglende features fra grupperne
-        for group in feature_groups.values():
-            group['features'] = [f for f in group['features'] if f not in missing_features]
-        all_features = [f for f in all_features if f not in missing_features]
-    
-    if not all_features:
+        all_features.extend(group['features']) # tilgår listen af features i dic og lægger til all_features listen (uden nested liste(ikke en liste i en liste))
         raise ValueError("Ingen gyldige features tilbage efter validering") # Melder fejl hvis der ikke er tilgængelige features
     
     # Beregn udviklingsmønstre - funktion udskriver: dict over dictornaries for hvert land, hvori der er trend, change, stability, acc osv. for alle features
     development_patterns = calculate_development_patterns(train_data, all_features)
     
-    # Håndter manglende værdier NAN, dog gjort meget i cal_dev_patterns for at der ikke er --> så sjældne tilfælde
-    imputer = SimpleImputer(strategy='mean')
-    patterns_imputed = pd.DataFrame(
-        imputer.fit_transform(development_patterns),
+    # Normaliser data med vægte
+    scaler = StandardScaler()
+    patterns_scaled = pd.DataFrame(
+        scaler.fit_transform(development_patterns),
         columns=development_patterns.columns,
         index=development_patterns.index
     )
     
-    # Normaliser data med vægte
-    scaler = StandardScaler()
-    patterns_scaled = pd.DataFrame(
-        scaler.fit_transform(patterns_imputed),
-        columns=patterns_imputed.columns,
-        index=patterns_imputed.index
-    )
-    
     # Gem scalere til senere brug
-    joblib.dump(imputer, 'imputer.joblib')
     joblib.dump(scaler, 'scaler.joblib')
     
     return patterns_scaled, feature_groups
@@ -195,15 +175,15 @@ def find_optimal_clusters(data, min_clusters=2, max_clusters=20):
     evaluation_scores = []
     
     for n_clusters in range(min_clusters, max_clusters + 1):
-        best_score = -np.inf
+        best_score = -np.inf #Fordi værdien kan være negativ
         best_labels = None
         best_model = None
         
         # Kør multiple initialiseringer for hver n_clusters for at finde de bedste centers
-        for _ in range(5):
+        for _ in range(5): # Kør 5 gange for at finde de bedste centers
             kmeans = KMeans(n_clusters=n_clusters, random_state=42+_, n_init=10)
             labels = kmeans.fit_predict(data)
-            score = evaluate_clustering(data, labels, n_clusters)
+            score = evaluate_clustering(data, labels, n_clusters) 
             
             if score > best_score:
                 best_score = score
