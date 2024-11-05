@@ -6,10 +6,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
-from models import randomforestregression, gradientboost
 import joblib
 import json
-from sklearn.linear_model import LinearRegression
 
 def calculate_development_patterns(data, feature_columns):
     """
@@ -18,41 +16,40 @@ def calculate_development_patterns(data, feature_columns):
     data = data.sort_values(['country', 'year'])
     patterns_dict = {}
 
-    for country in data['country'].unique(): # Gennemgår alle lande i datasættet
-        # Får alt data omkring bestemt land i 2000-2009 (2010-2020 sorteret fra i prepare_data())
+    for country in data['country'].unique():
         country_data = data[data['country'] == country]
         country_patterns = {}
 
-        for feature in feature_columns: # Gennemgår alle udvalgte features
+        for feature in feature_columns:
             # Beregn år-til-år ændringer for feature
             yearly_changes = country_data[feature].pct_change(fill_method=None) * 100
             
             # Beregn overordnet trend (lineær regression koefficient)
-            years = np.arange(len(country_data)) # Længden af listen af lande, lavet om til tal 0-9
-            values = country_data[feature].values # Får værdierne for specifik feature
-            if len(years) > 1:  # Sikrer at vi har nok data til regression
-                trend = np.polyfit(years, values, 1)[0] # Lineær linje for at finde en hældning = trend
+            years = np.arange(len(country_data))
+            values = country_data[feature].values
+            if len(years) > 1:
+                trend = np.polyfit(years, values, 1)[0]
             else:
                 trend = 0
             
             # Beregn acceleration (ændring i ændringsrate)
             acceleration = yearly_changes.diff()
             
-            # Håndter NaN og inf (kommer af division med 0) værdier erstatter med 0
-            yearly_changes = yearly_changes.replace([np.inf, -np.inf], np.nan).fillna(0) #Sørger for at første års data eksempelvis er 0
+            # Håndter NaN og inf værdier
+            yearly_changes = yearly_changes.replace([np.inf, -np.inf], np.nan).fillna(0)
             acceleration = acceleration.replace([np.inf, -np.inf], np.nan).fillna(0)
             
-            # Beregn standardafvigelse i udvikling (hvor meget den afviger fra gennemsnitsændringen) høj = stor variation, lav = stabilitet
-            stability = 1 - (yearly_changes.std() / (abs(yearly_changes.mean()) + 1e-6)) # abs = absolutte værdi (så ikke negativ), 1e-6 så ikke dividere med 0
+            # Beregn standardafvigelse i udvikling
+            stability = 1 - (yearly_changes.std() / (abs(yearly_changes.mean()) + 1e-6))
             
-            # Beregn total procentvis ændring mellem featureværdi i 2000 og 2009
+            # Beregn total procentvis ændring
             if country_data[feature].iloc[0] != 0:
                 total_change = ((country_data[feature].iloc[-1] / 
                                country_data[feature].iloc[0] - 1) * 100)
             else:
                 total_change = 0
             
-            # Gem alle mønstre for denne feature
+            # Gem mønstre for denne feature
             country_patterns.update({
                 f"{feature}_trend": trend,
                 f"{feature}_mean_change": yearly_changes.mean(),
@@ -62,7 +59,6 @@ def calculate_development_patterns(data, feature_columns):
                 f"{feature}_volatility": yearly_changes.std()
             })
         
-        # dict over dictornaries for hvert land, hvori der er trend, change, stability, acc osv. for alle features
         patterns_dict[country] = country_patterns
     
     patterns_df = pd.DataFrame.from_dict(patterns_dict, orient='index')
@@ -75,13 +71,12 @@ def prepare_training_data():
     print(f"\nIndlæser data fra: {DATA_FILE}")
     data = pd.read_csv(DATA_FILE)
     
-    # Print kolonner for verifikation
     print("\nTilgængelige kolonner:", data.columns.tolist())
     
     # Filtrer data til træningsperiode
     train_data = data[data['year'] <= YEAR_SPLIT]
     
-    # Definér feature grupper med vægte
+    # Definér feature grupper
     feature_groups = {
         'primary': {
             'features': ['Value_co2_emissions_kt_by_country'],
@@ -108,109 +103,141 @@ def prepare_training_data():
     # Fladgør feature liste
     all_features = []
     for group in feature_groups.values():
-        all_features.extend(group['features']) # tilgår listen af features i dic og lægger til all_features listen (uden nested liste(ikke en liste i en liste))
-        raise ValueError("Ingen gyldige features tilbage efter validering") # Melder fejl hvis der ikke er tilgængelige features
+        all_features.extend(group['features'])
     
-    # Beregn udviklingsmønstre - funktion udskriver: dict over dictornaries for hvert land, hvori der er trend, change, stability, acc osv. for alle features
+    # Beregn udviklingsmønstre
     development_patterns = calculate_development_patterns(train_data, all_features)
     
-    # Normaliser data med vægte
-    scaler = StandardScaler()
-    patterns_scaled = pd.DataFrame(
-        scaler.fit_transform(development_patterns),
+    # Print information om NaN værdier før imputation
+    print("\nManglende værdier før imputation:")
+    print(development_patterns.isna().sum())
+    print("\nProcent manglende værdier:")
+    print((development_patterns.isna().sum() / len(development_patterns) * 100).round(2))
+    
+    # Håndter manglende værdier før normalisering
+    imputer = SimpleImputer(strategy='mean')
+    development_patterns_imputed = pd.DataFrame(
+        imputer.fit_transform(development_patterns),
         columns=development_patterns.columns,
         index=development_patterns.index
     )
     
-    # Gem scalere til senere brug
+    # Normaliser data
+    scaler = StandardScaler()
+    patterns_scaled = pd.DataFrame(
+        scaler.fit_transform(development_patterns_imputed),
+        columns=development_patterns_imputed.columns,
+        index=development_patterns_imputed.index
+    )
+    
+    # Gem scaler til senere brug
     joblib.dump(scaler, 'scaler.joblib')
+    
+    print(f"\nAntal lande efter data preparation: {len(patterns_scaled)}")
     
     return patterns_scaled, feature_groups
 
-def evaluate_clustering(data, labels, n_clusters):
+def evaluate_clustering(data, min_clusters=2, max_clusters=20):
     """
-    Evaluerer clustering kvalitet med multiple metrics
-    """
-    # Tjekker at alle lande ikke er i samme kluster
-    if len(np.unique(labels)) <= 1:
-        return -np.inf
-    
-    # Beregn basis silhouette score data = develempment_patterns
-    silhouette = silhouette_score(data, labels)
-    
-    # Beregn cluster størrelse balance
-    cluster_sizes = np.array([sum(labels == i) for i in range(n_clusters)]) # Hvor mange er hvert label er der
-    size_variation = np.std(cluster_sizes) / np.mean(cluster_sizes) # Variation i størrelsen på clusters
-    
-    # Beregn cluster kompakthed for hver kluster
-    cluster_densities = []
-    for i in range(n_clusters): # for hvert kluster beregnes:
-        cluster_data = data[labels == i] # develompment_patterns for hvert land med det label
-        if len(cluster_data) > 1:
-            # Beregn gennemsnitlig afstand til cluster centroid
-            centroid = cluster_data.mean(axis=0)
-            distances = np.linalg.norm(cluster_data - centroid, axis=1)
-            cluster_densities.append(distances.mean())
-    
-    # giver variationen af densitet mellem clusterne - tæt på 1 = tætheden er konsistent på tværs af klynger
-    density_score = 1 - (np.std(cluster_densities) / np.mean(cluster_densities)) if cluster_densities else 0
-    
-    # Kombiner scores  af silhouettescore, size_variation (hvor stor variation på størrelse af clusters) og densityscore 
-    # ganges med hvor meget de skal vægtes
-    combined_score = (
-        silhouette * 0.5 +
-        (1 - size_variation) * 0.3 +
-        density_score * 0.2
-    )
-    
-    return combined_score
-
-def find_optimal_clusters(data, min_clusters=2, max_clusters=20):
-    """
-    Finder optimalt antal clusters med omfattende evaluering
+    Evaluerer forskellige antal clusters med både silhouette score og inertia
     """
     print("\nAnalyserer forskellige antal clusters...")
     
-    results = []
-    evaluation_scores = []
+    silhouette_scores = []
+    inertias = []
     
     for n_clusters in range(min_clusters, max_clusters + 1):
-        best_score = -np.inf #Fordi værdien kan være negativ
-        best_labels = None
-        best_model = None
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        labels = kmeans.fit_predict(data)
         
-        # Kør multiple initialiseringer for hver n_clusters for at finde de bedste centers
-        for _ in range(5): # Kør 5 gange for at finde de bedste centers
-            kmeans = KMeans(n_clusters=n_clusters, random_state=42+_, n_init=10)
-            labels = kmeans.fit_predict(data)
-            score = evaluate_clustering(data, labels, n_clusters) 
-            
-            if score > best_score:
-                best_score = score
-                best_labels = labels
-                best_model = kmeans
+        # Beregn scores
+        silhouette_avg = silhouette_score(data, labels)
+        inertia = kmeans.inertia_
         
-        evaluation_scores.append(best_score)
-        results.append({
-            'n_clusters': n_clusters,
-            'score': best_score,
-            'labels': best_labels,
-            'model': best_model
-        })
+        silhouette_scores.append(silhouette_avg)
+        inertias.append(inertia)
         
-        print(f"Antal clusters: {n_clusters}, Score: {best_score:.3f}")
+        print(f"Antal clusters: {n_clusters}")
+        print(f"Silhouette Score: {silhouette_avg:.3f}")
+        print(f"Inertia: {inertia:.2f}\n")
     
-    # Visualiser scores --> scores = Kombiner scores  af silhouettescore, size_variation (hvor stor variation på størrelse af clusters) og densityscore ganges med hvor meget de skal vægtes
-    plt.figure(figsize=(12, 6))
-    plt.plot(range(min_clusters, max_clusters + 1), evaluation_scores, marker='o')
-    plt.title('Cluster Evaluerings Score')
+    return silhouette_scores, inertias
+
+def find_optimal_clusters(development_patterns, min_clusters=2, max_clusters=20):
+    """
+    Finder optimalt antal clusters baseret på kombinationen af silhouette score og inertia
+    """
+    silhouette_scores, inertias = evaluate_clustering(development_patterns, min_clusters, max_clusters)
+    
+    # Konverter lister til numpy arrays
+    silhouette_scores = np.array(silhouette_scores)
+    inertias = np.array(inertias)
+    
+    # Normaliser inertia scores
+    normalized_inertias = 1 - (inertias / max(inertias))
+    
+    # Beregn ændring i inertia
+    inertia_changes = np.diff(inertias)
+    inertia_changes = np.append(inertia_changes, inertia_changes[-1])
+    normalized_changes = (inertia_changes - min(inertia_changes)) / (max(inertia_changes) - min(inertia_changes))
+    
+    # Kombiner scores
+    combined_scores = []
+    for i in range(len(silhouette_scores)):
+        combined_score = (silhouette_scores[i] + normalized_changes[i]) / 2
+        combined_scores.append(combined_score)
+        
+        print(f"\nDetaljeret scoring for {i + min_clusters} clusters:")
+        print(f"Silhouette Score: {silhouette_scores[i]:.3f}")
+        print(f"Normaliseret Inertia ændring: {normalized_changes[i]:.3f}")
+        print(f"Kombineret score: {combined_score:.3f}")
+    
+    # Visualiser resultater
+    plt.figure(figsize=(15, 5))
+    
+    # Silhouette plot
+    plt.subplot(1, 3, 1)
+    plt.plot(range(min_clusters, max_clusters + 1), silhouette_scores, marker='o')
+    plt.title('Silhouette Scores')
+    plt.xlabel('Antal clusters')
+    plt.ylabel('Silhouette Score')
+    plt.grid(True)
+    
+    # Elbow plot
+    plt.subplot(1, 3, 2)
+    plt.plot(range(min_clusters, max_clusters + 1), inertias, marker='o')
+    plt.title('Elbow Plot')
+    plt.xlabel('Antal clusters')
+    plt.ylabel('Inertia')
+    plt.grid(True)
+    
+    # Kombinerede scores plot
+    plt.subplot(1, 3, 3)
+    plt.plot(range(min_clusters, max_clusters + 1), combined_scores, marker='o')
+    plt.title('Kombinerede Scores')
     plt.xlabel('Antal clusters')
     plt.ylabel('Score')
     plt.grid(True)
-    plt.savefig('cluster_scores.png')
-    plt.show()
     
-    return results
+    plt.tight_layout()
+    plt.savefig('cluster_evaluation.png')
+    plt.show()
+
+    # Find bedste antal clusters
+    best_n_clusters = min_clusters + combined_scores.index(max(combined_scores))
+    
+    # Træn endelig model
+    final_model = KMeans(n_clusters=best_n_clusters, random_state=42)
+    labels = final_model.fit_predict(development_patterns)
+    
+    return {
+        'n_clusters': best_n_clusters,
+        'silhouette_score': silhouette_scores[best_n_clusters-min_clusters],
+        'inertia': inertias[best_n_clusters-min_clusters],
+        'combined_score': max(combined_scores),
+        'labels': labels,
+        'model': final_model
+    }
 
 def visualize_clusters(data, labels, n_clusters, feature_groups):
     """
@@ -219,10 +246,7 @@ def visualize_clusters(data, labels, n_clusters, feature_groups):
     data_with_clusters = data.copy()
     data_with_clusters['Cluster'] = labels
     
-    # Plot gennemsnitlige mønstre per cluster
-    plt.figure(figsize=(15, 10))
-    
-    # Organiser features efter grupper
+    # Plot mønstre for hver feature gruppe
     all_features = data.columns
     for group_name, group_info in feature_groups.items():
         plt.figure(figsize=(15, 8))
@@ -245,7 +269,7 @@ def visualize_clusters(data, labels, n_clusters, feature_groups):
 
 def print_cluster_countries(data, labels, n_clusters):
     """
-    Printer detaljeret cluster analyse
+    Printer detaljeret information om hvert cluster
     """
     data_with_clusters = data.copy()
     data_with_clusters['Cluster'] = labels
@@ -265,7 +289,6 @@ def print_cluster_countries(data, labels, n_clusters):
         for feature in data.columns:
             print(f"{feature}: {stats[feature]:.3f}")
         
-        # Gem statistik
         cluster_stats[cluster] = {
             'size': len(countries),
             'countries': countries,
@@ -273,7 +296,6 @@ def print_cluster_countries(data, labels, n_clusters):
         }
         print("-" * 50)
     
-    # Gem cluster statistik
     with open('cluster_statistics.json', 'w') as f:
         json.dump(cluster_stats, f, indent=4)
 
@@ -281,32 +303,25 @@ def analyze_development_clusters():
     """
     Hovedfunktion der udfører den komplette analyse
     """
-    # Forbered data
     development_patterns, feature_groups = prepare_training_data()
     
-    # Find optimale clusters
-    cluster_results = find_optimal_clusters(development_patterns)
-    
-    # Vælg bedste resultat
-    best_result = max(cluster_results, key=lambda x: x['score'])
+    best_result = find_optimal_clusters(development_patterns)
     
     print(f"\nBedste clustering resultat:")
     print(f"Antal clusters: {best_result['n_clusters']}")
-    print(f"Score: {best_result['score']:.3f}")
+    print(f"Silhouette Score: {best_result['silhouette_score']:.3f}")
+    print(f"Inertia: {best_result['inertia']:.2f}")
+    print(f"Kombineret score: {best_result['combined_score']:.3f}")
     
-    # Visualiser og analyser resultater
     visualize_clusters(development_patterns, best_result['labels'], 
                       best_result['n_clusters'], feature_groups)
     print_cluster_countries(development_patterns, best_result['labels'], 
                           best_result['n_clusters'])
     
-    # Gem clustering model og resultater
     joblib.dump(best_result['model'], 'best_clustering_model.joblib')
     
-    # Gem udviklingsmønstre med cluster labels
-    output_file = f'development_clusters_{YEAR_SPLIT}.csv'
     development_patterns['Cluster'] = best_result['labels']
-    development_patterns.to_csv(output_file)
+    development_patterns.to_csv(f'development_clusters_{YEAR_SPLIT}.csv')
     
     print(f"\nAlle resultater og modeller er gemt")
     return development_patterns, best_result
