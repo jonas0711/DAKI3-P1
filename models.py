@@ -32,7 +32,13 @@ def linearregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -44,8 +50,6 @@ def linearregression():
     
     # Printer r2 og rmse
     print_pred_metrics(y_test, y_pred, "Lineær regression")
-    
-
 
 def lassoregression():
     '''Lasso regression'''
@@ -55,7 +59,13 @@ def lassoregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -76,7 +86,13 @@ def ridgeregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -89,7 +105,6 @@ def ridgeregression():
     # Printer r2 og rmse
     print_pred_metrics(y_test, y_pred, "Rigde regression")
 
-
 def randomforestregression():
     # Hent datasæt
     data = pd.read_csv(DATA_FILE)
@@ -98,7 +113,13 @@ def randomforestregression():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     # Definerer modellen & træning
     model = RandomForestRegressor(n_estimators=100, random_state=39)
@@ -141,7 +162,13 @@ def gradientboost():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
@@ -168,7 +195,13 @@ def supportvector():
     selected_data = features.select_data(data)
 
     # Opdeling i train og test data
-    X_train, y_train, X_test, y_test = features.split_data(selected_data, TARGET)
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
 
     X_train, X_test = features.scaler_data(X_train, X_test)
 
