@@ -55,8 +55,11 @@
         "Density_(P/Km2)",
         "Land_Area(Km2)",
         "gdp_growth",
-        "gdp_per_capita"
+        "gdp_per_capita",
+        "latitude",
+        "longitude"
     ],
+    
     "features_psb": [
         "country",
         "year",
