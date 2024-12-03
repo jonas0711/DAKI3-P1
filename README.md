@@ -151,13 +151,6 @@ Almindelige problemer og løsninger:
 - "FileNotFoundError": Tjek stien til CSV-filer
 - "KeyError": Verificer feature-navne i konfigurationen
 
-## Landegrupperinger
-
-Vi har defineret følgende grupper:
-1. Udviklingslande (developing)
-2. Ressourcerige lande (resource_rich)
-3. Udviklede lande (developed)
-4. Storskalalande (large_scale)
 
 ## Særlige Noter
 
