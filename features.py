@@ -55,18 +55,18 @@ def select_data(dataset=None):
     # Erstat '\n' og mellemrum med underscore i alle kolonnenavne
     dataset.columns = dataset.columns.str.replace('\n', ' ').str.replace(' ', '_')
 
+    # Indlæs listen over godkendte lande
+    with open('valid_countries.json', 'r') as file:
+        valid_countries_data = json.load(file)
+        valid_countries = valid_countries_data['valid_countries']
+
+    # Filtrer datasættet til kun at indeholde godkendte lande
+    dataset = dataset[dataset['country'].isin(valid_countries)]
+
     with open('udvalgte_features.json', 'r') as file:
         feature_schema = json.load(file)
     
     features = feature_schema[FEATURES_SELECTED]
-
-    ##print("\nDatasæt information:")
-    ##print(f"Antal rækker: {len(dataset)}")
-    ##print(f"Antal kolonner: {len(dataset.columns)}")
-    
-    # Analysér manglende data
-    ##print("\nAnalyse af manglende data:")
-    ##missing_info = analyze_missing_data(dataset)
 
     # Fjern rækker med manglende værdier for både features og target
     end_data = dataset[features + [TARGET]].dropna()
@@ -79,7 +79,7 @@ def select_data(dataset=None):
         if col in end_data.columns:
             end_data = pd.get_dummies(end_data, columns=[col], prefix=col)
 
-    # Gem de opdaterede features efter one-hot encoding (de oprindelige + one-hot encoded kolonner)
+    # Gem de opdaterede features efter one-hot encoding
     final_features = end_data.drop(columns=[TARGET]).columns.tolist()
 
     # Gem de anvendte feature-navne efter one-hot encoding
@@ -88,11 +88,11 @@ def select_data(dataset=None):
 
     return end_data
 
-def split_data(dataset, target, year=YEAR_SPLIT):
+def split_data(dataset, target=TARGET, year=YEAR_SPLIT):
     '''Splitting dataset into train and test sæt'''
     # Adskil features og target
     X = dataset.drop(columns=[target])
-    y = dataset[target]
+    y = dataset[target] 
 
     # Split data i trænings- og testdata baseret på årstal
     train_data = dataset[dataset['year'] <= year]

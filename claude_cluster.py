@@ -15,6 +15,8 @@ def load_and_prepare_data():
     print(f"\nIndlæser data fra: {DATA_FILE}")
     data = pd.read_csv(DATA_FILE)
 
+    x_train, y_train, x_test, y_test = features.split_data(data)
+
     clustering_features = [
         'Value_co2_emissions_kt_by_country',
         'gdp_growth',
@@ -25,7 +27,6 @@ def load_and_prepare_data():
         'gdp_per_capita'
     ]
 
-    print("\nForbereder data...")
     # Grupperer land og laver gns på "Clustering_features" og sætter det som index
     country_profiles = data.groupby('country')[clustering_features].mean().reset_index()
 
