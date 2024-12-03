@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 from sklearn.metrics import silhouette_score
 import features
+import json
 
 def load_and_prepare_data():
     """
@@ -15,26 +16,20 @@ def load_and_prepare_data():
     print(f"\nIndlæser data fra: {DATA_FILE}")
     data = pd.read_csv(DATA_FILE)
 
-    x_train, y_train, x_test, y_test = features.split_data(data)
+    train_data, test_data = features.split_data(data)
 
-    clustering_features = [
-        'Value_co2_emissions_kt_by_country',
-        'gdp_growth',
-        'energy_per_gdp',
-        'fossil_share_energy',
-        'renewables_share_energy',
-        'Primary energy consumption per capita (kWh/person)',
-        'gdp_per_capita'
-    ]
+    with open('udvalgte_features.json', 'r') as file:
+        features_groups = json.load(file)
+        features = features_groups[FEATURES_SELECTED]
 
     # Grupperer land og laver gns på "Clustering_features" og sætter det som index
-    country_profiles = data.groupby('country')[clustering_features].mean().reset_index()
+    country_profiles = train_data.groupby('country')[features].mean().reset_index()
 
     # Dropper den kolonne med manglende data
     country_profiles = country_profiles.dropna()
     print(f"Antal lande med komplette data: {len(country_profiles)}")
 
-    return country_profiles, clustering_features
+    return country_profiles, features
 
 def scale_features(country_profiles, clustering_features):
     """
