@@ -98,11 +98,7 @@ def split_data(dataset, target=TARGET, year=YEAR_SPLIT):
     train_data = dataset[dataset['year'] <= year]
     test_data = dataset[dataset['year'] > year]
 
-    X_train = train_data.drop(columns=[target])
-    y_train = train_data[target]
-    X_test = test_data.drop(columns=[target])
-    y_test = test_data[target]
-    return X_train, y_train, X_test, y_test
+    return train_data, test_data
 
 def scaler_data(X_train, X_test):
     '''Scaling the dataset'''
