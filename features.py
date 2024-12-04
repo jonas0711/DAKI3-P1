@@ -48,43 +48,66 @@ def select_data(dataset=None):
     '''Selecting features in the dataset'''
     if dataset is None:
         dataset = pd.read_csv(DATA_FILE)
+    
+    print(f"\nAntal rækker i original datasæt: {len(dataset)}")
 
-    # Rens kolonnenavne for ekstra semikoloner og mellemrum
+    # Rens kolonnenavne
     dataset.columns = dataset.columns.str.replace(';', '').str.strip()
-
-    # Erstat '\n' og mellemrum med underscore i alle kolonnenavne
     dataset.columns = dataset.columns.str.replace('\n', ' ').str.replace(' ', '_')
+
+    # Fjern iso_code kolonnen hvis den findes
+    if 'iso_code' in dataset.columns:
+        dataset = dataset.drop('iso_code', axis=1)
+        print("Fjernet iso_code fra datasættet")
 
     # Indlæs listen over godkendte lande
     with open('valid_countries.json', 'r') as file:
         valid_countries_data = json.load(file)
         valid_countries = valid_countries_data['valid_countries']
 
-    # Filtrer datasættet til kun at indeholde godkendte lande
+    # Filtrer datasættet
+    original_len = len(dataset)
     dataset = dataset[dataset['country'].isin(valid_countries)]
-
+    print(f"Antal rækker efter landefiltrering: {len(dataset)}")
+    
+    # Indlæs feature schema
     with open('udvalgte_features.json', 'r') as file:
         feature_schema = json.load(file)
     
     features = feature_schema[FEATURES_SELECTED]
-
-    # Fjern rækker med manglende værdier for både features og target
-    end_data = dataset[features + [TARGET]].dropna()
-
-    # Liste over kategoriske kolonner der skal encoding
+    
+    # Håndter missing values - 20% grænse
+    features_plus_target = features + [TARGET]
+    dataset_selected = dataset[features_plus_target]
+    
+    # Identificer kategoriske kolonner
     categorical_columns = ['country', 'continent']
     
-    # Udfør one-hot encoding på de kategoriske kolonner der findes i datasættet
+    # Beregn procent manglende værdier for hver kolonne
+    missing_pct = dataset_selected.isnull().sum() / len(dataset_selected)
+    
+    # Behold kun kolonner med mindre end 20% manglende værdier
+    columns_to_keep = missing_pct[missing_pct < 0.2].index
+    print(f"\nKolonner fjernet pga. >20% manglende værdier:")
+    print(set(features_plus_target) - set(columns_to_keep))
+    
+    dataset_selected = dataset_selected[columns_to_keep]
+    
+    # Udfør one-hot encoding på kategoriske variable FØR vi fjerner NA værdier
     for col in categorical_columns:
-        if col in end_data.columns:
-            end_data = pd.get_dummies(end_data, columns=[col], prefix=col)
+        if col in dataset_selected.columns:
+            dataset_selected = pd.get_dummies(dataset_selected, columns=[col], prefix=col)
+    
+    # Fjern resterende rækker med manglende værdier
+    end_data = dataset_selected.dropna()
+    
+    print(f"\nAntal rækker før fjernelse af resterende NA: {len(dataset_selected)}")
+    print(f"Antal rækker efter fjernelse af resterende NA: {len(end_data)}")
 
-    # Gem de opdaterede features efter one-hot encoding
-    final_features = end_data.drop(columns=[TARGET]).columns.tolist()
-
-    # Gem de anvendte feature-navne efter one-hot encoding
+    # Gem features
+    final_features = [col for col in end_data.columns if col != TARGET]
     joblib.dump(final_features, FEATURES_SELECTED)
-    print(f"Features gemt som {FEATURES_SELECTED}")
+    print(f"\nFeatures gemt som {FEATURES_SELECTED}")
 
     return end_data
 

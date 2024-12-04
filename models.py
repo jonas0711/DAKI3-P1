@@ -114,6 +114,53 @@ def randomforestregression():
 
     # Opdeling i train og test data
     train_data, test_data = features.split_data(selected_data, TARGET)
+
+    print(train_data.head())
+
+def randomforestregression():
+    """Random forest regression model med fejlhåndtering"""
+    # Hent datasæt
+    print("\nIndlæser datasæt...")
+    data = pd.read_csv(DATA_FILE)
+    
+    if len(data) == 0:
+        print(f"FEJL: Ingen data fundet i {DATA_FILE}")
+        return
+        
+    # Udvælger features
+    print("Forbereder features...")
+    selected_data = features.select_data(data)
+    
+    if len(selected_data) == 0:
+        print("FEJL: Ingen data efter feature selection")
+        return
+        
+    # Opdeling i train og test data
+    print("Opdeler i trænings- og testdata...")
+    train_data, test_data = features.split_data(selected_data, TARGET)
+    
+    if len(train_data) == 0:
+        print(f"FEJL: Ingen træningsdata fundet før år {YEAR_SPLIT}")
+        return
+    
+    if len(test_data) == 0:
+        print(f"FEJL: Ingen testdata fundet efter år {YEAR_SPLIT}")
+        return
+    
+    # Adskil features og target
+    X_train = train_data.drop(columns=[TARGET])
+    y_train = train_data[TARGET]
+    X_test = test_data.drop(columns=[TARGET])
+    y_test = test_data[TARGET]
+    
+    print(f"\nAntal træningseksempler: {len(X_train)}")
+    print(f"Antal testeksempler: {len(X_test)}")
+    print(f"Antal features: {len(X_train.columns)}")
+
+    # Definerer modellen & træning
+    print("\nTræner Random Forest model...")
+    model = RandomForestRegressor(n_estimators=100, random_state=39)
+    model.fit(X_train, y_train)
     
     # Adskil features og target
     X_train = train_data.drop(columns=[TARGET])

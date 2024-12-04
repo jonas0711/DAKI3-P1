@@ -121,7 +121,6 @@
         "Land_Area(Km2)",
         "Latitude",
         "Longitude",
-        "iso_code",
         "population",
         "gdp",
         "biofuel_cons_change_pct",
