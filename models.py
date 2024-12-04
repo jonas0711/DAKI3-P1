@@ -21,7 +21,7 @@ def filter_data_by_cluster(data):
     return data[data['country'].isin(cluster_countries)]
 
 def print_pred_metrics(y_test, y_pred, model_type, metrics_type="all"):
-    '''Printer valgte evalueringsmetrikker'''
+    '''Printer valgte evalueringsmetrikker inklusiv procentvis afvigelse'''
     if metrics_type in ["r2_mse", "all"]:
         r2 = r2_score(y_test, y_pred)
         mse = mean_squared_error(y_test, y_pred)
@@ -31,8 +31,14 @@ def print_pred_metrics(y_test, y_pred, model_type, metrics_type="all"):
     
     if metrics_type in ["rmse", "all"]:
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+        # Beregn gennemsnit af faktiske værdier til procentvis afvigelse
+        mean_actual = np.mean(np.abs(y_test))
+        percentage_error = (rmse / mean_actual) * 100
+        
         print(f"\nResultater for {model_type}:")
         print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
+        print(f"Procentvis afvigelse: {percentage_error:.2f}%")
+        print(f"(baseret på gennemsnitlig absolut værdi: {mean_actual:.4f})")
 
 def prepare_data():
     """Forbereder data til modeltræning"""
@@ -94,7 +100,7 @@ def randomforestregression():
         print(f"\nFejl i Random Forest træning: {str(e)}")
 
 def gradientboost():
-    '''Gradient Boosting Regressor model med RMSE evaluering'''
+    '''Gradient Boosting Regressor model med fuld evaluering'''
     try:
         X_train, X_test, y_train, y_test = prepare_data()
         
@@ -110,8 +116,8 @@ def gradientboost():
         # Forudsigelser på testdata
         y_pred = model.predict(X_test)
         
-        # Evaluering
-        print_pred_metrics(y_test, y_pred, "Gradient Boosting Regression", "rmse")
+        # Evaluering - nu med alle metrics
+        print_pred_metrics(y_test, y_pred, "Gradient Boosting Regression", "all")
         
         # Gem modellen
         model_filename = f'gradient_boosting_model_{SELECTED_CLUSTER}.joblib'
