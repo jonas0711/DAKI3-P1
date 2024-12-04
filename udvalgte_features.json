@@ -251,10 +251,9 @@
     ],
 
     "pre_correlation":[
-        "Value_co2_emissions_kt_by_country",
         "coal_production",
         "coal_electricity",
-        "Electricity_from_fossil_fuels_",
+        "Electricity_from_fossil_fuels_(TWh)",
         "fossil_fuel_consumption",
         "gdp",
         "primary_energy_consumption",

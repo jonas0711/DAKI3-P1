@@ -1,6 +1,8 @@
 from kontrolcenter import *
 import pandas as pd
 import json
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def load_and_prepare_data():
     """
@@ -70,6 +72,28 @@ def handle_missing_data(dataset, threshold=0.20):
     
     return final_dataset
 
+def plot_correlation_heatmap(correlation_matrix, title="Korrelationsmatrix"):
+    """
+    Plotter en korrelationsmatrix som et heatmap
+    """
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(correlation_matrix, 
+                annot=True,  # Vis værdier i cellerne
+                cmap='coolwarm',  # Farvepalette
+                center=0,  # Centrer farveskalaen omkring 0
+                fmt='.2f',  # Vis 2 decimaler
+                square=True)  # Gør cellerne kvadratiske
+    
+    plt.title(title)
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    plt.tight_layout()
+    
+    # Gem plottet
+    plt.savefig(f'correlation_heatmap_{CONTINENT}.png')
+    print(f"\nKorrelationsmatrix gemt som: correlation_heatmap_{CONTINENT}.png")
+    plt.close()
+
 def analyze_correlations():
     """
     Hovedfunktion der udfører korrelationsanalyse og printer resultater
@@ -90,12 +114,17 @@ def analyze_correlations():
     # Indstil Pandas til at vise alle rækker
     pd.set_option('display.max_rows', None)
     
-    # Beregn og print korrelationer
-    print("\nKorrelationer med CO2-udledning:")
-    correlations = clean_data.corr()[TARGET]
-    print(correlations)
+    # Beregn korrelationer
+    correlation_matrix = clean_data.corr()
     
-    return clean_data, correlations
+    # Print korrelationer med target
+    print("\nKorrelationer med CO2-udledning:")
+    print(correlation_matrix[TARGET])
+    
+    # Plot korrelationsmatrix
+    plot_correlation_heatmap(correlation_matrix)
+    
+    return clean_data, correlation_matrix
 
 if __name__ == "__main__":
     analyze_correlations()
