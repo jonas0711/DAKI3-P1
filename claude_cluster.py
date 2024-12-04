@@ -6,7 +6,6 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 from sklearn.metrics import silhouette_score
-import features
 import json
 
 def load_and_prepare_data():
@@ -15,21 +14,36 @@ def load_and_prepare_data():
     """
     print(f"\nIndlæser data fra: {DATA_FILE}")
     data = pd.read_csv(DATA_FILE)
-
-    train_data, test_data = features.split_data(data)
-
+    
+    # Indlæs features baseret på FEATURES_SELECTED fra kontrolcenter
     with open('udvalgte_features.json', 'r') as file:
         features_groups = json.load(file)
-        features = features_groups[FEATURES_SELECTED]
+        clustering_features = features_groups[FEATURES_SELECTED]
+    
+    # Fjern 'country' og 'year' hvis de findes i listen
+    clustering_features = [f for f in clustering_features if f not in ['country', 'year']]
+    
+    print(f"\nBruger features fra {FEATURES_SELECTED}:")
+    print(clustering_features)
+    
+    # Verificer at alle features findes i datasættet
+    available_features = [f for f in clustering_features if f in data.columns]
+    missing_features = [f for f in clustering_features if f not in data.columns]
+    
+    if missing_features:
+        print("\nAdvarsel: Følgende features blev ikke fundet i datasættet:")
+        print(missing_features)
+        print("\nBruger kun tilgængelige features:")
+        print(available_features)
+    
+    # Grupperer efter land og beregner gennemsnit
+    country_profiles = data.groupby('country')[available_features].mean().reset_index()
 
-    # Grupperer land og laver gns på "Clustering_features" og sætter det som index
-    country_profiles = train_data.groupby('country')[features].mean().reset_index()
-
-    # Dropper den kolonne med manglende data
+    # Dropper rækker med manglende data
     country_profiles = country_profiles.dropna()
-    print(f"Antal lande med komplette data: {len(country_profiles)}")
+    print(f"\nAntal lande med komplette data: {len(country_profiles)}")
 
-    return country_profiles, features
+    return country_profiles, available_features
 
 def scale_features(country_profiles, clustering_features):
     """
@@ -51,6 +65,7 @@ def evaluate_clusters(features_scaled, min_clusters, max_clusters):
         kmeans = KMeans(n_clusters=n_clusters, random_state=39)
         cluster_labels = kmeans.fit_predict(features_scaled)
         
+        # Beregn scores
         silhouette_avg = silhouette_score(features_scaled, cluster_labels)
         inertia = kmeans.inertia_
         
@@ -63,14 +78,45 @@ def evaluate_clusters(features_scaled, min_clusters, max_clusters):
     
     return silhouette_scores, inertias
 
+def plot_evaluation_metrics(silhouette_scores, inertias, min_clusters, max_clusters):
+    """
+    Plotter inertia og silhouette scores side om side
+    """
+    # Opret figure med to subplots side om side
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    
+    # X-akse værdier (antal clusters)
+    clusters_range = list(range(min_clusters, max_clusters + 1))
+    
+    # Plot inertia (elbow curve)
+    ax1.plot(clusters_range, inertias, marker='o', linestyle='-', color='blue')
+    ax1.set_title('Elbow Curve (Inertia)')
+    ax1.set_xlabel('Antal Clusters')
+    ax1.set_ylabel('Inertia')
+    ax1.grid(True)
+    # Sæt x-aksen til kun at vise hele tal
+    ax1.set_xticks(clusters_range)
+    
+    # Plot silhouette scores
+    ax2.plot(clusters_range, silhouette_scores, marker='o', linestyle='-', color='red')
+    ax2.set_title('Silhouette Scores')
+    ax2.set_xlabel('Antal Clusters')
+    ax2.set_ylabel('Silhouette Score')
+    ax2.grid(True)
+    # Sæt x-aksen til kun at vise hele tal
+    ax2.set_xticks(clusters_range)
+    
+    # Juster layout og gem plot
+    plt.tight_layout()
+    plt.savefig('cluster_evaluation_metrics.png')
+    plt.close()
+
 def find_best_clusters(silhouette_scores, min_clusters):
     """
     Finder de tre bedste antal clusters baseret på silhouette score
     """
-    # Sortere silhouette_scores fra lavest til højest og slicer til de 3 højeste
+    # Sortere silhouette_scores fra højest til lavest
     top_3_indices = np.argsort(silhouette_scores)[-3:][::-1]
-
-    # Finder det faktiske index nr.
     top_3_n_clusters = [i + min_clusters for i in top_3_indices]
     
     print("\nTop 3 bedste antal clusters baseret på silhouette score:")
@@ -79,61 +125,20 @@ def find_best_clusters(silhouette_scores, min_clusters):
     
     return top_3_n_clusters
 
-def plot_cluster_characteristics(country_profiles, clustering_features, n_clusters):
+def print_cluster_details(country_profiles, clustering_features, n_clusters):
     """
-    Plotter karakteristika for et givet antal clusters
+    Printer detaljeret information om hvert cluster
     """
+    # Udfør clustering
     kmeans = KMeans(n_clusters=n_clusters, random_state=39)
     features_scaled = scale_features(country_profiles, clustering_features)
     cluster_labels = kmeans.fit_predict(features_scaled)
     country_profiles[f'Cluster_{n_clusters}'] = cluster_labels
-
-    # Plot heatmap hvor vi ser de gennemsnitlige værdier for hver cluster for at kunne sammenligne indellinger for clustrene
-    plt.figure(figsize=(15, 8))
-    plt.title(f'Karakteristika for {n_clusters} clusters')
-    cluster_means = country_profiles.groupby(f'Cluster_{n_clusters}')[clustering_features].mean()
-    sns.heatmap(cluster_means, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.tight_layout()
-    plt.show()
-
-    # Plot scatter
-    plot_scatter_clusters(country_profiles, n_clusters)
-
-def plot_scatter_clusters(country_profiles, n_clusters):
-    """
-    Laver scatter plot af landene i deres respektive clusters
-    """
-    plt.figure(figsize=(15, 8))
-    plt.title(f'Landegruppering med {n_clusters} clusters')
     
-    scatter = plt.scatter(
-        country_profiles['Primary energy consumption per capita (kWh/person)'],
-        country_profiles['renewables_share_energy'],
-        c=country_profiles[f'Cluster_{n_clusters}'],
-        cmap='viridis'
-    )
-    
-    for i, country in enumerate(country_profiles['country']):
-        # iloc finder værdi i dataframe baseret på position/index
-        plt.annotate(country, (
-            country_profiles['Primary energy consumption per capita (kWh/person)'].iloc[i],
-            country_profiles['renewables_share_energy'].iloc[i]
-        ))
-    
-    plt.xlabel('Energiforbrug per capita (kWh/person)')
-    plt.ylabel('Vedvarende energi andel (%)')
-    plt.colorbar(scatter, label='Cluster')
-    plt.tight_layout()
-    plt.show()
-
-def print_cluster_details(country_profiles, clustering_features, n_clusters):
-    """
-    Printer detaljeret information om hver cluster herunder lande, gennemsnitlige featur værdier for klusteret
-    Altså det der kendetegner de fundne klustre
-    """
     print(f"\nDetaljer for {n_clusters} clusters:")
     for cluster in range(n_clusters):
         cluster_countries = country_profiles[country_profiles[f'Cluster_{n_clusters}'] == cluster]
+        
         print(f"\nCluster {cluster}:")
         print("Lande:", ", ".join(cluster_countries['country'].tolist()))
         print("\nGennemsnitlige værdier:")
@@ -143,7 +148,7 @@ def print_cluster_details(country_profiles, clustering_features, n_clusters):
 
 def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     """
-    Hovedfunktion der udfører den komplette cluster analyse
+    Hovedfunktion der udfører den complette cluster analyse
     """
     # Indlæs og forbered data
     country_profiles, clustering_features = load_and_prepare_data()
@@ -154,12 +159,14 @@ def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     # Evaluer forskellige antal clusters
     silhouette_scores, inertias = evaluate_clusters(features_scaled, min_clusters, max_clusters)
     
+    # Plot evalueringsmetrikker
+    plot_evaluation_metrics(silhouette_scores, inertias, min_clusters, max_clusters)
+    
     # Find de bedste antal clusters
     top_3_n_clusters = find_best_clusters(silhouette_scores, min_clusters)
     
-    # Visualiser og analyser de bedste cluster løsninger
+    # Print detaljer for de bedste cluster løsninger
     for n_clusters in top_3_n_clusters:
-        plot_cluster_characteristics(country_profiles, clustering_features, n_clusters)
         print_cluster_details(country_profiles, clustering_features, n_clusters)
     
     # Gem resultater
