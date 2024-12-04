@@ -266,6 +266,18 @@
         "population",
         "renewables_consumption",
         "low_carbon_consumption"
+    ],
+
+    "after_correlation":[
+        "fossil_fuel_consumption",
+        "gdp",
+        "coal_consumption",
+        "oil_consumption",
+        "electricity_generation",
+        "gas_consumption",
+        "Land_Area(Km2)",
+        "population",
+        "renewables_consumption"
     ]
 }
 

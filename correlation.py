@@ -111,15 +111,23 @@ def analyze_correlations():
     # Håndter manglende data
     clean_data = handle_missing_data(numeric_data)
     
-    # Indstil Pandas til at vise alle rækker
-    pd.set_option('display.max_rows', None)
-    
     # Beregn korrelationer
     correlation_matrix = clean_data.corr()
     
-    # Print korrelationer med target
+    # Print korrelationer i et grid format
+    print("\nKorrelationsmatrix:")
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 1000)
+    pd.set_option('display.precision', 2)
+    
+    # Formater korrelationsmatricen som en pæn tabel
+    correlation_table = correlation_matrix.round(2)
+    print("\n" + str(correlation_table))
+    
     print("\nKorrelationer med CO2-udledning:")
-    print(correlation_matrix[TARGET])
+    correlations_with_target = correlation_matrix[TARGET].sort_values(ascending=False)
+    print(correlations_with_target)
     
     # Plot korrelationsmatrix
     plot_correlation_heatmap(correlation_matrix)
