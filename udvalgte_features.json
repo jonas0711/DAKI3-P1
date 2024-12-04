@@ -248,7 +248,25 @@
         "wind_energy_per_capita",
         "wind_share_elec",
         "wind_share_energy"
-    ]
+    ],
 
+    "pre_correlation":[
+        "Value_co2_emissions_kt_by_country",
+        "coal_production",
+        "coal_electricity",
+        "Electricity_from_fossil_fuels_",
+        "fossil_fuel_consumption",
+        "gdp",
+        "primary_energy_consumption",
+        "coal_consumption",
+        "oil_consumption",
+        "electricity_demand",
+        "electricity_generation",
+        "gas_consumption",
+        "Land_Area(Km2)",
+        "population",
+        "renewables_consumption",
+        "low_carbon_consumption"
+    ]
 }
 
