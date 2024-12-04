@@ -1,0 +1,48 @@
+{
+    "cluster_0": {
+    "name": "mixed_economies",
+    "description": "Blandede økonomier - både udviklingslande og udviklede økonomier",
+    "countries": [
+    "Algeria", "Argentina", "Australia", "Austria", "Azerbaijan",
+    "Belarus", "Belgium", "Brazil", "Bulgaria", "Canada", "Chile",
+    "Colombia", "Croatia", "Czechia", "Denmark", "Ecuador", "Egypt",
+    "Estonia", "Finland", "France", "Germany", "Greece", "Hungary",
+    "Iceland", "India", "Indonesia", "Iraq", "Ireland", "Israel",
+    "Italy", "Japan", "Kazakhstan", "Latvia", "Lithuania", "Luxembourg",
+    "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand",
+    "North Macedonia", "Norway", "Pakistan", "Peru", "Philippines",
+    "Poland", "Portugal", "Romania", "Slovakia", "Slovenia",
+    "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland",
+    "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine",
+    "United Arab Emirates", "United Kingdom", "Uzbekistan"
+    ]
+    },
+    "cluster_1": {
+    "name": "china",
+    "description": "Kina - Stor økonomisk vækst og højt energiforbrug",
+    "countries": ["China"]
+    },
+    "cluster_2": {
+    "name": "usa",
+    "description": "USA - Høj BNP per capita og teknologisk udvikling",
+    "countries": ["United States"]
+    },
+    "all_countries": {
+    "name": "all_countries",
+    "description": "Alle lande samlet",
+    "countries": [
+    "Algeria", "Argentina", "Australia", "Austria", "Azerbaijan",
+    "Belarus", "Belgium", "Brazil", "Bulgaria", "Canada", "Chile",
+    "China", "Colombia", "Croatia", "Czechia", "Denmark", "Ecuador", "Egypt",
+    "Estonia", "Finland", "France", "Germany", "Greece", "Hungary",
+    "Iceland", "India", "Indonesia", "Iraq", "Ireland", "Israel",
+    "Italy", "Japan", "Kazakhstan", "Latvia", "Lithuania", "Luxembourg",
+    "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand",
+    "North Macedonia", "Norway", "Pakistan", "Peru", "Philippines",
+    "Poland", "Portugal", "Romania", "Slovakia", "Slovenia",
+    "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland",
+    "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine",
+    "United Arab Emirates", "United Kingdom", "United States", "Uzbekistan"
+    ]
+    }
+    }
