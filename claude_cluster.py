@@ -169,6 +169,10 @@ def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     for n_clusters in top_3_n_clusters:
         print_cluster_details(country_profiles, clustering_features, n_clusters)
     
+    # Tilføj analyse af 6 clusters
+    print("\n=== Analyse af 6 clusters ===")
+    print_cluster_details(country_profiles, clustering_features, 6)
+    
     # Gem resultater
     output_file = 'cluster_results_top_3.csv'
     country_profiles.to_csv(output_file, index=False)
