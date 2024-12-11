@@ -146,6 +146,39 @@ def print_cluster_details(country_profiles, clustering_features, n_clusters):
             print(f"{feature}: {cluster_countries[feature].mean():.2f}")
         print("-" * 50)
 
+def calculate_cluster_feature_averages(country_profiles, clustering_features, n_clusters):
+    """
+    Beregner gennemsnitsværdier for hver cluster baseret på features brugt i models.py
+    """
+    # Indlæs features fra udvalgte_features.json
+    with open('udvalgte_features.json', 'r') as file:
+        features_groups = json.load(file)
+        modeling_features = features_groups[FEATURES_SELECTED]
+    
+    # Fjern 'country' og 'year' hvis de findes i listen
+    modeling_features = [f for f in modeling_features if f not in ['country', 'year']]
+    
+    print(f"\nGennemsnitsværdier for features brugt i models.py for {n_clusters} clusters:")
+    
+    # Udfør clustering for at få cluster labels
+    kmeans = KMeans(n_clusters=n_clusters, random_state=39)
+    features_scaled = scale_features(country_profiles, clustering_features)
+    cluster_labels = kmeans.fit_predict(features_scaled)
+    country_profiles[f'Cluster_{n_clusters}'] = cluster_labels
+    
+    # Beregn og print gennemsnit for hver cluster
+    for cluster in range(n_clusters):
+        cluster_data = country_profiles[country_profiles[f'Cluster_{n_clusters}'] == cluster]
+        
+        print(f"\nCluster {cluster} gennemsnit:")
+        print("-" * 50)
+        for feature in modeling_features:
+            if feature in country_profiles.columns:
+                avg_value = cluster_data[feature].mean()
+                print(f"{feature}: {avg_value:.2f}")
+    
+    return country_profiles
+
 def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     """
     Hovedfunktion der udfører den complette cluster analyse
@@ -172,6 +205,9 @@ def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     # Tilføj analyse af 6 clusters
     print("\n=== Analyse af 6 clusters ===")
     print_cluster_details(country_profiles, clustering_features, 6)
+    
+    # Beregn og print feature gennemsnit for 6 clusters
+    country_profiles = calculate_cluster_feature_averages(country_profiles, clustering_features, 6)
     
     # Gem resultater
     output_file = 'cluster_results_top_3.csv'
