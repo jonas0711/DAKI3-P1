@@ -20,25 +20,21 @@ def filter_data_by_cluster(data):
     cluster_countries = get_cluster_countries()
     return data[data['country'].isin(cluster_countries)]
 
-def print_pred_metrics(y_test, y_pred, model_type, metrics_type="all"):
-    '''Printer valgte evalueringsmetrikker inklusiv procentvis afvigelse'''
-    if metrics_type in ["r2_mse", "all"]:
-        r2 = r2_score(y_test, y_pred)
-        mse = mean_squared_error(y_test, y_pred)
-        print(f"\nResultater for {model_type}:")
-        print(f"R² score: {r2:.4f}")
-        print(f"Mean Squared Error (MSE): {mse:.4f}")
+def print_pred_metrics(y_test, y_pred, model_type):
+    '''Printer evalueringsmetrikker inklusiv procentvis afvigelse'''
+    # Beregn metrikker
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     
-    if metrics_type in ["rmse", "all"]:
-        rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-        # Beregn gennemsnit af faktiske værdier til procentvis afvigelse
-        mean_actual = np.mean(np.abs(y_test))
-        percentage_error = (rmse / mean_actual) * 100
-        
-        print(f"\nResultater for {model_type}:")
-        print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
-        print(f"Procentvis afvigelse: {percentage_error:.2f}%")
-        print(f"(baseret på gennemsnitlig absolut værdi: {mean_actual:.4f})")
+    # Beregn procentvis afvigelse
+    mean_actual = np.mean(np.abs(y_test))
+    percentage_error = (rmse / mean_actual) * 100
+    
+    print(f"\nResultater for {model_type}:")
+    print(f"R² score: {r2:.4f}")
+    print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
+    print(f"Procentvis afvigelse: {percentage_error:.2f}%")
+    print(f"(baseret på gennemsnitlig absolut værdi: {mean_actual:.4f})")
 
 def prepare_data():
     """Forbereder data til modeltræning"""
@@ -73,7 +69,7 @@ def prepare_data():
     return X_train, X_test, y_train, y_test
 
 def randomforestregression():
-    """Random Forest Regression model med R² og MSE evaluering"""
+    """Random Forest Regression model med fuld evaluering"""
     try:
         X_train, X_test, y_train, y_test = prepare_data()
         
@@ -81,15 +77,15 @@ def randomforestregression():
         model = RandomForestRegressor(
             n_estimators=100,
             random_state=39,
-            n_jobs=-1  # Bruger alle tilgængelige CPU-kerner
+            n_jobs=-1
         )
         model.fit(X_train, y_train)
         
         # Forudsigelser på testdata
         y_pred = model.predict(X_test)
         
-        # Evaluering
-        print_pred_metrics(y_test, y_pred, "Random Forest Regression", "r2_mse")
+        # Evaluering med alle metrikker
+        print_pred_metrics(y_test, y_pred, "Random Forest Regression")
         
         # Gem modellen
         model_filename = f'random_forest_model_{SELECTED_CLUSTER}.joblib'
@@ -109,15 +105,15 @@ def gradientboost():
             n_estimators=100,
             learning_rate=0.1,
             random_state=39,
-            verbose=1  # Vis træningsfremskridt
+            verbose=1
         )
         model.fit(X_train, y_train)
         
         # Forudsigelser på testdata
         y_pred = model.predict(X_test)
         
-        # Evaluering - nu med alle metrics
-        print_pred_metrics(y_test, y_pred, "Gradient Boosting Regression", "all")
+        # Evaluering med alle metrikker
+        print_pred_metrics(y_test, y_pred, "Gradient Boosting Regression")
         
         # Gem modellen
         model_filename = f'gradient_boosting_model_{SELECTED_CLUSTER}.joblib'
@@ -128,7 +124,7 @@ def gradientboost():
         print(f"\nFejl i Gradient Boosting træning: {str(e)}")
 
 def supportvector():
-    '''Support Vector Regression model med R² og MSE evaluering'''
+    '''Support Vector Regression model med fuld evaluering'''
     try:
         X_train, X_test, y_train, y_test = prepare_data()
         
@@ -144,8 +140,8 @@ def supportvector():
         # Forudsigelser på testdata
         y_pred = model.predict(X_test)
         
-        # Evaluering
-        print_pred_metrics(y_test, y_pred, "Support Vector Regression", "r2_mse")
+        # Evaluering med alle metrikker
+        print_pred_metrics(y_test, y_pred, "Support Vector Regression")
         
         # Gem modellen
         model_filename = f'svr_model_{SELECTED_CLUSTER}.joblib'
