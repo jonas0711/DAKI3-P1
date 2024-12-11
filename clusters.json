@@ -7,7 +7,7 @@
             "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
             "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
             "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
-            "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru", 
+            "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
             "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
             "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
             "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
@@ -36,5 +36,22 @@
     "cluster_5": {
         "description": "Store lande med høj vedvarende energi",
         "countries": ["Australia", "Brazil", "Canada"]
-    }
+    },
+    "cluster_6": {
+        "description": "Alle lande fra de øvrige klynger",
+        "countries": [
+            "Algeria", "Argentina", "Austria", "Azerbaijan", "Belarus", "Belgium", 
+            "Bulgaria", "Chile", "Colombia", "Croatia", "Czechia", "Denmark", 
+            "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
+            "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
+            "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
+            "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
+            "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
+            "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
+            "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
+            "United Arab Emirates", "Uzbekistan",
+            "China", "United States", "France", "Germany", "Indonesia", 
+            "Italy", "Japan", "Mexico", "United Kingdom", "India", 
+            "Australia", "Brazil", "Canada"
+        ]}
 }
