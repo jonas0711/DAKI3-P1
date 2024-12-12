@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.svm import SVR
+from sklearn.preprocessing import StandardScaler
 import joblib
 import json
 
@@ -128,6 +129,11 @@ def supportvector():
     try:
         X_train, X_test, y_train, y_test = prepare_data()
         
+        print("\nSkalerer data til Support Vector Regression...")
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        
         print("\nTræner Support Vector Regression model...")
         model = SVR(
             kernel='rbf',
@@ -135,18 +141,22 @@ def supportvector():
             epsilon=0.1,
             verbose=True
         )
-        model.fit(X_train, y_train)
+        model.fit(X_train_scaled, y_train)
         
         # Forudsigelser på testdata
-        y_pred = model.predict(X_test)
+        y_pred = model.predict(X_test_scaled)
         
         # Evaluering med alle metrikker
         print_pred_metrics(y_test, y_pred, "Support Vector Regression")
         
-        # Gem modellen
+        # Gem model og scaler
         model_filename = f'svr_model_{SELECTED_CLUSTER}.joblib'
+        scaler_filename = f'svr_scaler_{SELECTED_CLUSTER}.joblib'
+        
         joblib.dump(model, model_filename)
+        joblib.dump(scaler, scaler_filename)
         print(f"\nModel gemt som: {model_filename}")
+        print(f"Scaler gemt som: {scaler_filename}")
         
     except Exception as e:
         print(f"\nFejl i Support Vector Regression træning: {str(e)}")
