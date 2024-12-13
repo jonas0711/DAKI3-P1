@@ -83,22 +83,92 @@
 | Brasilien | 434.300 | 431.589 | -0,62% | 401.905 | -7,46% | 371.861 | -14,38% |
 | Canada | 580.210 | 568.149 | -2,08% | 557.654 | -3,89% | 371.871 | -35,91% |
 
+## Cluster 6 - Alle lande
+| Land | Faktisk (kt) | GB Forudsagt | GB Fejl% | RF Forudsagt | RF Fejl% | SVR Forudsagt | SVR Fejl% |
+|------|-------------|--------------|----------|--------------|----------|---------------|-----------|
+| Algeriet | 171.250 | 143.923 | -15,96% | 145.753 | -14,89% | 94.346 | -44,91% |
+| Argentina | 168.100 | 165.816 | -1,36% | 185.495 | 10,35% | 94.355 | -43,87% |
+| Australien | 386.530 | 393.210 | 1,73% | 377.791 | -2,26% | 94.404 | -75,58% |
+| Østrig | 64.770 | 61.492 | -5,06% | 63.337 | -2,21% | 94.318 | 45,62% |
+| Aserbajdsjan | 35.510 | 41.435 | 16,69% | 41.294 | 16,29% | 94.314 | 165,60% |
+| Hviderusland | 57.670 | 70.591 | 22,41% | 68.463 | 18,72% | 94.317 | 63,55% |
+| Belgien | 93.010 | 104.291 | 12,13% | 107.389 | 15,46% | 94.322 | 1,41% |
+| Brasilien | 434.300 | 541.842 | 24,76% | 617.697 | 42,23% | 94.409 | -78,26% |
+| Bulgarien | 39.140 | 38.255 | -2,26% | 39.959 | 2,09% | 94.312 | 140,96% |
+| Canada | 580.210 | 547.238 | -5,68% | 556.478 | -4,09% | 94.417 | -83,73% |
+| Chile | 91.370 | 86.899 | -4,89% | 95.781 | 4,83% | 94.322 | 3,23% |
+| Kina | 10.707.220 | 7.679.119 | -28,28% | 7.431.045 | -30,60% | 94.397 | -99,12% |
+| Colombia | 81.040 | 103.776 | 28,06% | 101.489 | 25,23% | 94.330 | 16,40% |
+| Kroatien | 16.520 | 18.095 | 9,53% | 18.921 | 14,54% | 94.310 | 470,89% |
+| Tjekkiet | 96.290 | 100.417 | 4,29% | 108.441 | 12,62% | 94.316 | -2,05% |
+| Danmark | 29.700 | 28.693 | -3,39% | 30.992 | 4,35% | 94.313 | 217,55% |
+| Ecuador | 39.290 | 32.827 | -16,45% | 33.329 | -15,17% | 94.313 | 140,04% |
+| Estland | 10.180 | 14.689 | 44,29% | 14.771 | 45,09% | 94.309 | 826,42% |
+| Finland | 40.710 | 42.203 | 3,67% | 46.745 | 14,83% | 94.315 | 131,67% |
+| Frankrig | 300.520 | 321.796 | 7,08% | 374.044 | 24,47% | 94.381 | -68,59% |
+| Tyskland | 657.400 | 850.799 | 29,42% | 772.915 | 17,57% | 94.410 | -85,64% |
+| Grækenland | 60.000 | 62.238 | 3,73% | 59.517 | -0,81% | 94.315 | 57,19% |
+| Ungarn | 46.380 | 51.727 | 11,53% | 51.055 | 10,08% | 94.314 | 103,35% |
+| Indien | 2.456.300 | 4.932.417 | 100,81% | 4.624.746 | 88,28% | 94.400 | -96,16% |
+| Indonesien | 619.840 | 575.028 | -7,23% | 632.697 | 2,07% | 94.397 | -84,77% |
+| Irak | 174.560 | 120.888 | -30,75% | 111.537 | -36,10% | 94.326 | -45,96% |
+| Irland | 35.750 | 32.606 | -8,79% | 35.881 | 0,37% | 94.313 | 163,81% |
+| Israel | 62.650 | 63.991 | 2,14% | 69.384 | 10,75% | 94.316 | 50,54% |
+| Italien | 317.240 | 334.746 | 5,52% | 351.682 | 10,86% | 94.373 | -70,25% |
+| Japan | 1.081.570 | 1.292.051 | 19,46% | 1.303.109 | 20,48% | 94.423 | -91,27% |
+| Kazakhstan | 212.110 | 224.947 | 6,05% | 217.219 | 2,41% | 94.343 | -55,52% |
+| Letland | 7.570 | 9.826 | 29,80% | 8.233 | 8,76% | 94.310 | 1145,83% |
+| Litauen | 11.730 | 16.087 | 37,15% | 13.050 | 11,25% | 94.310 | 704,01% |
+| Luxembourg | 9.490 | 10.588 | 11,57% | 10.344 | 9,00% | 94.309 | 893,78% |
+| Malaysia | 253.270 | 279.088 | 10,19% | 294.883 | 16,43% | 94.340 | -62,75% |
+| Mexico | 449.270 | 466.659 | 3,87% | 494.629 | 10,10% | 94.392 | -78,99% |
+| Marokko | 71.480 | 66.871 | -6,45% | 62.324 | -12,81% | 94.316 | 31,95% |
+| Holland | 146.340 | 158.759 | 8,49% | 169.497 | 15,82% | 94.334 | -35,54% |
+| New Zealand | 34.010 | 39.572 | 16,35% | 40.653 | 19,53% | 94.314 | 177,31% |
+| Nordmakedonien | 8.300 | 10.620 | 27,95% | 8.596 | 3,57% | 94.309 | 1036,26% |
+| Norge | 35.950 | 37.299 | 3,75% | 37.026 | 2,99% | 94.328 | 162,39% |
+| Pakistan | 190.570 | 200.215 | 5,06% | 213.554 | 12,06% | 94.354 | -50,49% |
+| Peru | 56.750 | 58.120 | 2,41% | 55.466 | -2,26% | 94.324 | 66,21% |
+| Filippinerne | 145.420 | 152.757 | 5,05% | 131.435 | -9,62% | 94.329 | -35,13% |
+| Polen | 295.130 | 317.101 | 7,44% | 304.882 | 3,30% | 94.336 | -68,04% |
+| Portugal | 44.640 | 52.549 | 17,72% | 54.989 | 23,18% | 94.315 | 111,28% |
+| Rumænien | 73.950 | 67.461 | -8,77% | 67.312 | -8,98% | 94.318 | 27,54% |
+| Slovenien | 13.600 | 12.895 | -5,18% | 12.468 | -8,32% | 94.310 | 593,45% |
+| Sydafrika | 439.640 | 407.543 | -7,30% | 401.162 | -8,75% | 94.340 | -78,54% |
+| Spanien | 239.980 | 269.723 | 12,39% | 287.267 | 19,70% | 94.357 | -60,68% |
+| Sverige | 35.000 | 41.490 | 18,54% | 38.941 | 11,26% | 94.326 | 169,50% |
+| Schweiz | 37.380 | 35.732 | -4,41% | 36.790 | -1,58% | 94.316 | 152,32% |
+| Thailand | 267.090 | 307.913 | 15,28% | 325.084 | 21,71% | 94.351 | -64,67% |
+| Trinidad og Tobago | 17.190 | 41.888 | 143,67% | 41.869 | 143,57% | 94.313 | 448,65% |
+| Ukraine | 174.730 | 187.225 | 7,15% | 208.290 | 19,21% | 94.329 | -46,01% |
+| Storbritannien | 348.920 | 358.874 | 2,85% | 385.754 | 10,56% | 94.383 | -72,95% |
+| USA | 4.817.720 | 4.637.722 | -3,74% | 3.724.722 | -22,69% | 94.397 | -98,04% |
+| Uzbekistan | 116.710 | 122.773 | 5,20% | 122.845 | 5,26% | 94.327 | -19,18% |
+
+Alle værdier er i kiloton CO2-udledning (kt).
+
 ### Hovedobservationer:
 
 1. **Gradient Boosting (GB)**:
    - Klarer sig bedst på tværs af alle clusters
    - Særligt god til Cluster 5 (under 3% fejl)
-   - Problemer med Kina (-27,99%) og Indien (-37,41%)
+   - Problemer med store økonomier som Kina (-27,99%) og Indien (-37,41%)
+   - Ved samlet analyse af alle lande (Cluster 6) ses lignende mønstre, hvor modellen har sværest ved at håndtere de største økonomier
+   - Viser bedst stabilitet ved forudsigelse af mellemstore landes udledning
 
 2. **Random Forest (RF)**:
    - Tæt på GB's præstation i de fleste tilfælde
    - Mere stabil med mindre udsving
    - Også udfordret af Kina og Indien
+   - I den samlede analyse (Cluster 6) viser RF samme tendens som GB med udfordringer ved ekstremer
+   - Generelt mere konservative forudsigelser end GB
 
 3. **Support Vector Regression (SVR)**:
    - Konsekvent dårligst præsterende model
    - Ekstreme fejl i Cluster 0 (op til 663% fejl)
    - Tendens til at overestimere små lande og underestimere store
+   - I den samlede analyse (Cluster 6) ses modellens begrænsninger tydeligt med ekstreme fejl
+   - Viser sig uegnet til denne type forudsigelser
 
 4. **Clustervise observationer**:
    - Cluster 0: GB og RF har acceptable fejl (typisk 5-20%)
@@ -107,5 +177,6 @@
    - Cluster 3: Blandede resultater, GB mest stabil
    - Cluster 4 (Indien): Alle modeller underestimerer kraftigt
    - Cluster 5: Bedste resultater for alle modeller
+   - Cluster 6 (Alle lande): Bekræfter mønstre fra individuelle clusters, hvor modellerne præsterer bedst på mellemstore lande og har størst udfordringer med ekstremerne
 
 Alle værdier er i kiloton CO2-udledning (kt).

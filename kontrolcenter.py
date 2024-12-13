@@ -9,6 +9,6 @@ TRAIN_YEARS = list(range(2000, 2010))  # Træningsår
 TEST_YEARS = [2019]   # Kun test på 2019
 
 # Cluster konfiguration
-SELECTED_CLUSTER = "cluster_0"  # Vælg mellem: cluster_0, cluster_1, cluster_2, cluster_3, cluster_4, cluster_5, cluster_6
+SELECTED_CLUSTER = "cluster_6"  # Vælg mellem: cluster_0, cluster_1, cluster_2, cluster_3, cluster_4, cluster_5, cluster_6
 CLUSTERS_FILE = "clusters.json"
 # =========================================
