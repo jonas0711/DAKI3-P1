@@ -1,7 +1,6 @@
 # ======== Konfigurationsvariabler ========
-CONTINENT = 'world'  # Ændr dette til det ønskede kontinent
-DATA_FILE = f"CSV_files/{CONTINENT}_data.csv"
-MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"
+DATA_FILE = f"CSV_files/world_data.csv"
+MODEL_FILENAME = f"gradient_boosting_model_2000_2009.pkl"
 FEATURES_SELECTED = "after_correlation"
 YEAR_SPLIT = 2009  # Årstal til at splitte data i trænings- og testdata
 TARGET = "Value_co2_emissions_kt_by_country"

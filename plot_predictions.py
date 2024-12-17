@@ -14,51 +14,39 @@ def get_cluster_countries():
         clusters = json.load(f)
     return clusters[SELECTED_CLUSTER]['countries']
 
-def load_and_prepare_data(model_type='gradient_boosting'):
+def load_and_prepare_data():
     """
     Indlæser og forbereder test data samt model
     """
-    print(f"\nIndlæser data...")
     
     # Hent lande for den valgte cluster
     cluster_countries = get_cluster_countries()
-    print(f"\nAnalyserer følgende lande fra {SELECTED_CLUSTER}:")
-    print(", ".join(cluster_countries))
-    
+
     # Indlæs og forbered data
     data = features.select_data()
     
     # Filtrer data til kun at inkludere lande fra den valgte cluster
     data = data[data['country'].isin(cluster_countries)]
     
-    # Vi vil kun have data fra det seneste år i datasættet
-    latest_year = data['year'].max()
-    data = data[data['year'] == latest_year]
-    print(f"\nBruger data fra år: {latest_year}")
-    
+    # Vi vil kun have data fra 2019
+    data = data[data['year'] == 2019]
+
+    # Hent features fra kontrolcenter
+    with open('udvalgte_features.json', 'r') as file:
+        feature_schema = json.load(file)
+    feature_cols = feature_schema[FEATURES_SELECTED]
+   
     # Split i features og target
-    feature_cols = [col for col in data.columns if col not in [TARGET, 'year', 'country']]
     X_test = data[feature_cols]
     y_test = data[TARGET]
     countries_test = data['country']
     
-    # Indlæs model baseret på type
-    print(f"\nIndlæser {model_type} model...")
-    if model_type == 'svr':
-        model_filename = f'svr_model_{SELECTED_CLUSTER}.joblib'
-        scaler_filename = f'svr_scaler_{SELECTED_CLUSTER}.joblib'
-        try:
-            model = joblib.load(model_filename)
-            scaler = joblib.load(scaler_filename)
-            X_test = scaler.transform(X_test)
-        except FileNotFoundError as e:
-            raise FileNotFoundError(f"Kunne ikke finde model eller scaler filer: {str(e)}")
-    else:
-        model_filename = f'{model_type}_model_{SELECTED_CLUSTER}.joblib'
-        try:
-            model = joblib.load(model_filename)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Kunne ikke finde model-filen: {model_filename}")
+    # Indlæs gradient boosting model
+    model_filename = f'Modeller/gradient_boosting_model_{SELECTED_CLUSTER}.joblib'
+    try:
+        model = joblib.load(model_filename)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Kunne ikke finde model-filen")
     
     # Lav forudsigelser
     y_pred = model.predict(X_test)
@@ -72,7 +60,7 @@ def load_and_prepare_data(model_type='gradient_boosting'):
     
     return results
 
-def plot_performance(results, model_type='gradient_boosting'):
+def plot_performance(results):
     """
     Plotter faktiske vs. forudsagte værdier for det seneste år
     """
@@ -101,7 +89,7 @@ def plot_performance(results, model_type='gradient_boosting'):
     latest_year = results['actual'].name if hasattr(results['actual'], 'name') else 'seneste år'
     plt.xlabel(f'Faktisk CO2-udledning (kt) - {latest_year}')
     plt.ylabel(f'Forudsagt CO2-udledning (kt) - {latest_year}')
-    plt.title(f'Sammenligning af Faktiske og Forudsagte CO2-udledninger\n{SELECTED_CLUSTER} - {model_type}')
+    plt.title(f'Sammenligning af Faktiske og Forudsagte CO2-udledninger\n{SELECTED_CLUSTER}')
     
     # Tilføj grid
     plt.grid(True, alpha=0.3)
@@ -110,10 +98,9 @@ def plot_performance(results, model_type='gradient_boosting'):
     plt.tight_layout()
     
     # Gem plot
-    plt.savefig(f'prediction_performance_{model_type}_{SELECTED_CLUSTER}.png', 
+    plt.savefig(f'Performance_png/prediction_performance_{SELECTED_CLUSTER}.png', 
                 bbox_inches='tight',
                 dpi=300)
-    print(f"\nPlot gemt som: prediction_performance_{model_type}_{SELECTED_CLUSTER}.png")
     plt.close()
 
 def calculate_metrics(results):
@@ -135,32 +122,28 @@ def calculate_metrics(results):
     
     return metrics
 
-def analyze_predictions(model_type='gradient_boosting'):
+def analyze_predictions():
     """
     Hovedfunktion der udfører analysen
     """
     # Indlæs og forbered data
-    results = load_and_prepare_data(model_type)
+    results = load_and_prepare_data()
     
     # Beregn metrikker
     metrics = calculate_metrics(results)
     
     # Print resultater
-    print("\nPerformance metrikker for seneste år:")
+    print("\nPerformance metrikker for 2019:")
     print(metrics.to_string(index=False))
     
     # Lav plot
-    plot_performance(results, model_type)
+    plot_performance(results)
     
     return results, metrics
 
 if __name__ == "__main__":
-    # Liste over modeller der skal evalueres
-    model_types = ['gradient_boosting', 'random_forest', 'svr']
-    
-    for model_type in model_types:
-        try:
-            print(f"\n=== Evaluerer {model_type} model ===")
-            analyze_predictions(model_type)
-        except Exception as e:
-            print(f"Fejl ved evaluering af {model_type}: {str(e)}")
+    try:
+        print("Evaluerer gradient boosting model")
+        analyze_predictions()
+    except Exception as e:
+        print(f"Fejl ved evaluering: {str(e)}")

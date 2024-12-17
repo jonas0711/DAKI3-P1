@@ -9,7 +9,6 @@ def load_and_prepare_data():
     Indlæser og forbereder data til korrelationsanalyse.
     Inkluderer kun godkendte lande fra valid_countries.json
     """
-    print(f"\nIndlæser data fra: {DATA_FILE}")
     dataset = pd.read_csv(DATA_FILE)
     
     # Indlæs godkendte lande
@@ -18,13 +17,7 @@ def load_and_prepare_data():
         valid_countries = valid_countries_data['valid_countries']
     
     # Filtrer til godkendte lande
-    initial_rows = len(dataset)
     dataset = dataset[dataset['country'].isin(valid_countries)]
-    filtered_rows = len(dataset)
-    
-    print(f"\nAntal rækker før landefiltrering: {initial_rows}")
-    print(f"Antal rækker efter landefiltrering: {filtered_rows}")
-    print(f"Antal fjernede rækker: {initial_rows - filtered_rows}")
     
     # Rens kolonnenavne
     dataset.columns = dataset.columns.str.replace(';', '').str.strip()
@@ -42,35 +35,13 @@ def get_selected_features():
     features_list = feature_schema[FEATURES_SELECTED]
     
     # Fjern 'country' og 'year' hvis de findes
-    features_to_remove = ['country', 'year', 'iso_code', 'continent']
+    features_to_remove = ['country', 'year', 'iso_code']
     for feature in features_to_remove:
         if feature in features_list:
             features_list.remove(feature)
     
     return features_list
 
-def handle_missing_data(dataset, threshold=0.20):
-    """
-    Håndterer manglende data med 20% grænseværdi
-    """
-    # Beregn procent manglende værdier
-    missing_percentages = dataset.isnull().sum() / len(dataset)
-    columns_to_drop = missing_percentages[missing_percentages > threshold].index
-    
-    if len(columns_to_drop) > 0:
-        print(f"\nFølgende kolonner droppes pga. for mange manglende værdier (>{threshold*100}%):")
-        for col in columns_to_drop:
-            print(f"- {col}: {missing_percentages[col]*100:.1f}% manglende")
-    
-    # Fjern kolonner og rækker med manglende data
-    clean_dataset = dataset.drop(columns=columns_to_drop)
-    final_dataset = clean_dataset.dropna()
-    
-    print(f"\nAntal rækker før cleaning: {len(dataset)}")
-    print(f"Antal rækker efter cleaning: {len(final_dataset)}")
-    print(f"Antal fjernede rækker: {len(dataset) - len(final_dataset)}")
-    
-    return final_dataset
 
 def plot_correlation_heatmap(correlation_matrix, title="Korrelationsmatrix"):
     """
@@ -90,8 +61,7 @@ def plot_correlation_heatmap(correlation_matrix, title="Korrelationsmatrix"):
     plt.tight_layout()
     
     # Gem plottet
-    plt.savefig(f'correlation_heatmap_{CONTINENT}.png')
-    print(f"\nKorrelationsmatrix gemt som: correlation_heatmap_{CONTINENT}.png")
+    plt.savefig(f'Billeder/correlation_heatmap_{CONTINENT}.png')
     plt.close()
 
 def analyze_correlations():
@@ -106,33 +76,19 @@ def analyze_correlations():
     
     # Tilføj target variabel og fjern ikke-numeriske kolonner
     analysis_features = features_list + [TARGET]
-    numeric_data = dataset[analysis_features].select_dtypes(include=['float64', 'int64'])
-    
-    # Håndter manglende data
-    clean_data = handle_missing_data(numeric_data)
+    final_dataset = dataset[analysis_features].select_dtypes(include=['float64', 'int64'])
     
     # Beregn korrelationer
-    correlation_matrix = clean_data.corr()
+    correlation_matrix = final_dataset.corr()
     
-    # Print korrelationer i et grid format
-    print("\nKorrelationsmatrix:")
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.width', 1000)
-    pd.set_option('display.precision', 2)
-    
-    # Formater korrelationsmatricen som en pæn tabel
-    correlation_table = correlation_matrix.round(2)
-    print("\n" + str(correlation_table))
-    
-    print("\nKorrelationer med CO2-udledning:")
+    print("Korrelationer med CO2-udledning:")
     correlations_with_target = correlation_matrix[TARGET].sort_values(ascending=False)
     print(correlations_with_target)
     
     # Plot korrelationsmatrix
     plot_correlation_heatmap(correlation_matrix)
     
-    return clean_data, correlation_matrix
+    return final_dataset, correlation_matrix
 
 if __name__ == "__main__":
     analyze_correlations()

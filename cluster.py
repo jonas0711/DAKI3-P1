@@ -12,7 +12,6 @@ def load_and_prepare_data():
     """
     Indlæser og forbereder data til clustering analyse
     """
-    print(f"\nIndlæser data fra: {DATA_FILE}")
     data = pd.read_csv(DATA_FILE)
     
     # Indlæs features baseret på FEATURES_SELECTED fra kontrolcenter
@@ -20,32 +19,15 @@ def load_and_prepare_data():
         features_groups = json.load(file)
         clustering_features = features_groups[FEATURES_SELECTED]
     
-    # Fjern 'country' og 'year' hvis de findes i listen
-    clustering_features = [f for f in clustering_features if f not in ['country', 'year']]
-    
-    print(f"\nBruger features fra {FEATURES_SELECTED}:")
-    print(clustering_features)
-    
-    # Verificer at alle features findes i datasættet
-    available_features = [f for f in clustering_features if f in data.columns]
-    missing_features = [f for f in clustering_features if f not in data.columns]
-    
-    if missing_features:
-        print("\nAdvarsel: Følgende features blev ikke fundet i datasættet:")
-        print(missing_features)
-        print("\nBruger kun tilgængelige features:")
-        print(available_features)
-    
     # Grupperer efter land og beregner gennemsnit
-    country_profiles = data.groupby('country')[available_features].mean().reset_index()
+    country_profiles = data.groupby('country')[clustering_features].mean().reset_index()
 
     # Dropper rækker med manglende data
     country_profiles = country_profiles.dropna()
-    print(f"\nAntal lande med komplette data: {len(country_profiles)}")
 
-    return country_profiles, available_features
+    return country_profiles, clustering_features
 
-def scale_features(country_profiles, clustering_features):
+def scale_features(country_profiles, clustering_features=FEATURES_SELECTED):
     """
     Standardiserer features til clustering
     """
@@ -60,7 +42,6 @@ def evaluate_clusters(features_scaled, min_clusters, max_clusters):
     silhouette_scores = []
     inertias = []
     
-    print("\nTester forskellige antal clusters...")
     for n_clusters in range(min_clusters, max_clusters + 1):
         kmeans = KMeans(n_clusters=n_clusters, random_state=39)
         cluster_labels = kmeans.fit_predict(features_scaled)
@@ -71,10 +52,6 @@ def evaluate_clusters(features_scaled, min_clusters, max_clusters):
         
         silhouette_scores.append(silhouette_avg)
         inertias.append(inertia)
-        
-        print(f"Antal clusters: {n_clusters}")
-        print(f"Silhouette Score: {silhouette_avg:.3f}")
-        print(f"Inertia: {inertia:.2f}\n")
     
     return silhouette_scores, inertias
 
@@ -108,22 +85,8 @@ def plot_evaluation_metrics(silhouette_scores, inertias, min_clusters, max_clust
     
     # Juster layout og gem plot
     plt.tight_layout()
-    plt.savefig('cluster_evaluation_metrics.png')
+    plt.savefig('Billeder/cluster_evaluation_metrics.png')
     plt.close()
-
-def find_best_clusters(silhouette_scores, min_clusters):
-    """
-    Finder de tre bedste antal clusters baseret på silhouette score
-    """
-    # Sortere silhouette_scores fra højest til lavest
-    top_3_indices = np.argsort(silhouette_scores)[-3:][::-1]
-    top_3_n_clusters = [i + min_clusters for i in top_3_indices]
-    
-    print("\nTop 3 bedste antal clusters baseret på silhouette score:")
-    for i, n_clusters in enumerate(top_3_n_clusters):
-        print(f"{i+1}. {n_clusters} clusters (Silhouette Score: {silhouette_scores[n_clusters-min_clusters]:.3f})")
-    
-    return top_3_n_clusters
 
 def print_cluster_details(country_profiles, clustering_features, n_clusters):
     """
@@ -155,10 +118,7 @@ def calculate_cluster_feature_averages(country_profiles, clustering_features, n_
         features_groups = json.load(file)
         modeling_features = features_groups[FEATURES_SELECTED]
     
-    # Fjern 'country' og 'year' hvis de findes i listen
-    modeling_features = [f for f in modeling_features if f not in ['country', 'year']]
-    
-    print(f"\nGennemsnitsværdier for features brugt i models.py for {n_clusters} clusters:")
+    print(f"Gennemsnitsværdier for features brugt i models.py for {n_clusters} clusters:")
     
     # Udfør clustering for at få cluster labels
     kmeans = KMeans(n_clusters=n_clusters, random_state=39)
@@ -195,27 +155,15 @@ def analyze_optimal_clusters(min_clusters=2, max_clusters=20):
     # Plot evalueringsmetrikker
     plot_evaluation_metrics(silhouette_scores, inertias, min_clusters, max_clusters)
     
-    # Find de bedste antal clusters
-    top_3_n_clusters = find_best_clusters(silhouette_scores, min_clusters)
-    
-    # Print detaljer for de bedste cluster løsninger
-    for n_clusters in top_3_n_clusters:
-        print_cluster_details(country_profiles, clustering_features, n_clusters)
-    
     # Tilføj analyse af 6 clusters
-    print("\n=== Analyse af 6 clusters ===")
+    print("Analyse af 6 clusters")
     print_cluster_details(country_profiles, clustering_features, 6)
     
     # Beregn og print feature gennemsnit for 6 clusters
     country_profiles = calculate_cluster_feature_averages(country_profiles, clustering_features, 6)
     
-    # Gem resultater
-    output_file = 'cluster_results_top_3.csv'
-    country_profiles.to_csv(output_file, index=False)
-    print(f"\nResultater gemt i: {output_file}")
-
-    return country_profiles, top_3_n_clusters
+    return country_profiles
 
 if __name__ == "__main__":
     # Kør analysen
-    country_profiles, top_3_n_clusters = analyze_optimal_clusters()
+    country_profiles = analyze_optimal_clusters()

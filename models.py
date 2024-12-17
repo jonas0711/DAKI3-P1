@@ -39,23 +39,13 @@ def print_pred_metrics(y_test, y_pred, model_type):
 
 def prepare_data():
     """Forbereder data til modeltræning"""
-    print("\nIndlæser datasæt...")
     data = pd.read_csv(DATA_FILE)
     
-    print(f"\nFiltrerer data for cluster: {SELECTED_CLUSTER}")
     data = filter_data_by_cluster(data)
 
-    print("Forbereder features...")
     selected_data = features.select_data(data)
 
-    if 'year' not in selected_data.columns:
-        raise ValueError("Fejl: 'year' kolonnen mangler i datasættet")
-
-    print("Opdeler i trænings- og testdata...")
     train_data, test_data = features.split_data(selected_data, TARGET)
-
-    if len(train_data) == 0 or len(test_data) == 0:
-        raise ValueError("Fejl: Ikke nok data til at træne/teste modellen")
 
     # Adskil features og target, og fjern 'year' og 'country' kolonner
     feature_cols = [col for col in train_data.columns if col not in [TARGET, 'year', 'country']]
