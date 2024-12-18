@@ -1,15 +1,6 @@
 # CO2-Udledning Prognosemodel
 
-Dette projekt er udviklet som del af et P1-projekt på uddannelsen Design og Anvendelse af Kunstig Intelligens ved Aalborg Universitet. Formålet er at analysere og forudsige CO2-udledninger på tværs af forskellige lande og landegrupper ved hjælp af maskinlæringsmodeller.
-
-## Projektets Hovedfunktioner
-
-- Forudsigelse af CO2-udledninger for forskellige lande og landegrupper
-- Avanceret clustering-analyse til gruppering af lande
-- Sammenligning af forskellige maskinlæringsmodeller (GB, RF, SVR)
-- Detaljeret korrelationsanalyse
-- Visualisering af resultater og mønstre
-- Håndtering af forskellige datasæt og landegrupperinger
+Dette projekt er udviklet som del af et P1-projekt på uddannelsen Design og Anvendelse af Kunstig Intelligens ved Aalborg Universitet. Formålet er at analysere og forudsige CO2-udledninger på tværs af forskellige lande og landegrupper ved hjælp af Machine Learning modeller.
 
 ## Projektstruktur
 
