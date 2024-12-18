@@ -61,7 +61,7 @@ def plot_correlation_heatmap(correlation_matrix, title="Korrelationsmatrix"):
     plt.tight_layout()
     
     # Gem plottet
-    plt.savefig(f'Billeder/correlation_heatmap_{CONTINENT}.png')
+    plt.savefig('Billeder/correlation_heatmap.png')
     plt.close()
 
 def analyze_correlations():

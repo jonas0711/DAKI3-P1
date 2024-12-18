@@ -14,7 +14,7 @@ def get_cluster_countries():
     """Henter liste over lande for den valgte cluster"""
     with open(CLUSTERS_FILE, 'r') as f:
         clusters = json.load(f)
-    return clusters[SELECTED_CLUSTER]['countries']
+    return clusters[SELECTED_CLUSTER]
 
 def filter_data_by_cluster(data):
     """Filtrerer datasættet baseret på den valgte cluster"""
@@ -53,9 +53,6 @@ def prepare_data():
     y_train = train_data[TARGET]
     X_test = test_data[feature_cols]
     y_test = test_data[TARGET]
-
-    print(f"\nAntal træningseksempler: {len(X_train)}")
-    print(f"Antal testeksempler: {len(X_test)}")
     
     return X_train, X_test, y_train, y_test
 
@@ -63,8 +60,7 @@ def randomforestregression():
     """Random Forest Regression model med fuld evaluering"""
     try:
         X_train, X_test, y_train, y_test = prepare_data()
-        
-        print("\nTræner Random Forest model...")
+
         model = RandomForestRegressor(
             n_estimators=100,
             random_state=39,
@@ -79,19 +75,17 @@ def randomforestregression():
         print_pred_metrics(y_test, y_pred, "Random Forest Regression")
         
         # Gem modellen
-        model_filename = f'random_forest_model_{SELECTED_CLUSTER}.joblib'
+        model_filename = f'Modeller/random_forest_model_{SELECTED_CLUSTER}.joblib'
         joblib.dump(model, model_filename)
-        print(f"\nModel gemt som: {model_filename}")
         
     except Exception as e:
-        print(f"\nFejl i Random Forest træning: {str(e)}")
+        print(f"Fejl i Random Forest træning: {str(e)}")
 
 def gradientboost():
     '''Gradient Boosting Regressor model med fuld evaluering'''
     try:
         X_train, X_test, y_train, y_test = prepare_data()
         
-        print("\nTræner Gradient Boosting model...")
         model = GradientBoostingRegressor(
             n_estimators=100,
             learning_rate=0.1,
@@ -107,24 +101,20 @@ def gradientboost():
         print_pred_metrics(y_test, y_pred, "Gradient Boosting Regression")
         
         # Gem modellen
-        model_filename = f'gradient_boosting_model_{SELECTED_CLUSTER}.joblib'
+        model_filename = f'Modeller/gradient_boosting_model_{SELECTED_CLUSTER}.joblib'
         joblib.dump(model, model_filename)
-        print(f"\nModel gemt som: {model_filename}")
-        
+            
     except Exception as e:
-        print(f"\nFejl i Gradient Boosting træning: {str(e)}")
+        print(f"Fejl i Gradient Boosting træning: {str(e)}")
 
 def supportvector():
     '''Support Vector Regression model med fuld evaluering'''
     try:
         X_train, X_test, y_train, y_test = prepare_data()
-        
-        print("\nSkalerer data til Support Vector Regression...")
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_test_scaled = scaler.transform(X_test)
         
-        print("\nTræner Support Vector Regression model...")
         model = SVR(
             kernel='rbf',
             C=1.0,
@@ -140,27 +130,25 @@ def supportvector():
         print_pred_metrics(y_test, y_pred, "Support Vector Regression")
         
         # Gem model og scaler
-        model_filename = f'svr_model_{SELECTED_CLUSTER}.joblib'
-        scaler_filename = f'svr_scaler_{SELECTED_CLUSTER}.joblib'
+        model_filename = f'Modeller/svr_model_{SELECTED_CLUSTER}.joblib'
+        scaler_filename = f'Modeller/svr_scaler_{SELECTED_CLUSTER}.joblib'
         
         joblib.dump(model, model_filename)
         joblib.dump(scaler, scaler_filename)
-        print(f"\nModel gemt som: {model_filename}")
-        print(f"Scaler gemt som: {scaler_filename}")
-        
+
     except Exception as e:
-        print(f"\nFejl i Support Vector Regression træning: {str(e)}")
+        print(f"Fejl i Support Vector Regression træning: {str(e)}")
 
 def print_model_comparison(models_results):
     """Printer en sammenligning af modelresultater"""
-    print("\n=== Model Sammenligning ===")
+    print("Model Sammenligning")
     print("Model                  R²      RMSE")
     print("-" * 40)
     for model_name, metrics in models_results.items():
         print(f"{model_name:<20} {metrics['r2']:.4f}  {metrics['rmse']:.4f}")
 
 if __name__ == "__main__":
-    print(f"\n=== Træner og evaluerer modeller for {SELECTED_CLUSTER} ===")
+    print(f"Træner og evaluerer modeller for {SELECTED_CLUSTER}")
     
     try:
         randomforestregression()
@@ -168,4 +156,4 @@ if __name__ == "__main__":
         supportvector()
         
     except Exception as e:
-        print(f"\nDer opstod en fejl under modelkørslen: {str(e)}")
+        print(f"Der opstod en fejl under modelkørslen: {str(e)}")

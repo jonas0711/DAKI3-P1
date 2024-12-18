@@ -12,7 +12,7 @@ def get_cluster_countries():
     """Henter liste over lande for den valgte cluster"""
     with open(CLUSTERS_FILE, 'r') as f:
         clusters = json.load(f)
-    return clusters[SELECTED_CLUSTER]['countries']
+    return clusters[SELECTED_CLUSTER]
 
 def load_and_prepare_data():
     """

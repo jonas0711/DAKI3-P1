@@ -1,170 +1,146 @@
-# CO2-Udledning Prognosemodel - En Begynderguide
+# CO2-Udledning Prognosemodel
 
-Dette projekt er udviklet til at analysere og forudsige CO2-udledninger på tværs af forskellige lande og grupper. Tænk på det som en avanceret opskrift, hvor vi bruger forskellige ingredienser (data) til at lave en ret (forudsigelse) om fremtidig CO2-udledning.
+Dette projekt er udviklet som del af et P1-projekt på uddannelsen Design og Anvendelse af Kunstig Intelligens ved Aalborg Universitet. Formålet er at analysere og forudsige CO2-udledninger på tværs af forskellige lande og landegrupper ved hjælp af maskinlæringsmodeller.
 
-## Hvad Kan Programmet?
+## Projektets Hovedfunktioner
 
-Programmet kan:
-- Forudsige CO2-udledninger for forskellige lande og landegrupper
-- Analysere mønstre og sammenhænge mellem forskellige faktorer
-- Udføre clustering-analyser for at gruppere lande efter udviklingsprofiler
-- Sammenligne forskellige maskinlæringsmodeller
-- Visualisere korrelationer og udviklingsmønstre
-- Analysere data på tværs af forskellige landegrupperinger
+- Forudsigelse af CO2-udledninger for forskellige lande og landegrupper
+- Avanceret clustering-analyse til gruppering af lande
+- Sammenligning af forskellige maskinlæringsmodeller (GB, RF, SVR)
+- Detaljeret korrelationsanalyse
+- Visualisering af resultater og mønstre
+- Håndtering af forskellige datasæt og landegrupperinger
 
-## Hvordan Virker Det?
-
-### Kontrolcenter - Vores "Køkken"
-I filen `kontrolcenter.py` har vi samlet vores grundopskrift:
-
-```python
-CONTINENT = 'world'  # Hvilket datasæt vil vi arbejde med?
-DATA_FILE = f"CSV_files/{CONTINENT}_data.csv"  # Vores datakilde
-MODEL_FILENAME = f"gradient_boosting_model_{CONTINENT.lower()}_2000_2009.pkl"  # Gem vores model
-FEATURES_SELECTED = "features_1"  # Vores variabelliste
-YEAR_SPLIT = 2009  # Skilleår mellem træning og test
-TARGET = "Value_co2_emissions_kt_by_country"  # Vores målvariabel
-```
-
-Dette gør det nemt at:
-- Skifte mellem forskellige landegrupper
-- Anvende forskellige datasæt
-- Justere træningsperioden
-- Tilpasse modellen til forskellige formål
-
-### Data Vi Bruger - Vores Ingredienser
-Vi analyserer mange forskellige faktorer, herunder:
-- Befolkningstæthed
-- BNP og økonomisk vækst
-- Energiforbrug per capita
-- Andel af vedvarende energi
-- Elektricitetsproduktion og -forbrug
-- CO2-udledninger
-- Fossilt brændstofforbrug
-- Geografisk placering
-
-## Projektstruktur - Vores Køkken
+## Projektstruktur
 
 ```
 Projektmappe/
-├── CSV_files/               <- Vores datamappe
-├── kontrolcenter.py        <- Hovedkonfiguration
-├── correlation.py          <- Korrelationsanalyse
-├── features.py            <- Feature-håndtering
-├── models.py              <- Maskinlæringsmodeller
-├── claude_cluster.py      <- K-means clustering
-├── claude_dbscan.py       <- DBSCAN clustering
-├── claude_time_cluster.py <- Tidsbaseret clustering
-├── opdel_i_kontinenter.py <- Landegruppering
-└── udvalgte_features.json <- Feature-konfiguration
+├── CSV_files/               # Datamappe med CSV-filer
+├── Billeder/               # Gemte visualiseringer
+├── Modeller/              # Gemte ML-modeller
+├── Performance_png/       # Performance visualiseringer
+├── kontrolcenter.py       # Central konfiguration
+├── features.py           # Feature håndtering og databehandling
+├── models.py             # ML-modeller implementering
+├── correlation.py        # Korrelationsanalyse
+├── plot_predictions.py   # Visualisering af forudsigelser
+├── cluster.py           # Clustering implementering
+├── README.md            # Denne fil
+├── clusters.json        # Konfiguration af landegruppering
+├── valid_countries.json # Liste over gyldige lande
+└── udvalgte_features.json # Feature konfiguration
 ```
 
-## Clustering-metoder - Vores Analyseredskaber
+## Central Styring via kontrolcenter.py
 
-Vi bruger tre forskellige clustering-tilgange:
-1. K-means Clustering (claude_cluster.py)
-   - Grupperer lande baseret på lignende karakteristika
-   - Bruger silhouette score til optimal gruppering
-   
-2. DBSCAN Clustering (claude_dbscan.py)
-   - Finder naturlige grupperinger i data
-   - Håndterer støj og outliers effektivt
+Projektet styres centralt gennem `kontrolcenter.py`, hvor alle vigtige konfigurationer samles:
 
-3. Tidsbaseret Clustering (claude_time_cluster.py)
-   - Analyserer udvikling over tid
-   - Identificerer fælles udviklingsmønstre
+```python
+DATA_FILE = "CSV_files/world_data.csv"
+FEATURES_SELECTED = "after_correlation"
+YEAR_SPLIT = 2009
+TARGET = "Value_co2_emissions_kt_by_country"
+TRAIN_YEARS = list(range(2000, 2010))
+TEST_YEARS = [2019]
+SELECTED_CLUSTER = "cluster_6"
+```
 
-## Maskinlæringsmodeller - Vores Værktøjer
+## Implementerede Modeller
 
-Vi har implementeret følgende modeller:
-1. Linear Regression (basal lineær model)
-2. Lasso Regression (lineær model med regularisering)
-3. Ridge Regression (alternativ regulariseringsmetode)
-4. Random Forest Regression (ensemble-metode)
-5. Gradient Boosting Regression (avanceret ensemble-metode)
-6. Support Vector Regression (ikke-lineær modellering)
+1. **Gradient Boosting (GB)**
+   - Bedst præsterende model på tværs af clusters
+   - God til mellemstore landes udledninger
+   - Udfordret ved ekstreme værdier (Kina, Indien)
 
-## Sådan Kommer Du I Gang
+2. **Random Forest (RF)**
+   - Stabil performance
+   - Mindre udsving i forudsigelser
+   - Lignende udfordringer som GB
 
-### 1. Installation af Nødvendige Pakker
+3. **Support Vector Regression (SVR)**
+   - Fungerer bedst på normaliserede data
+   - Mindre præcis end GB og RF
+   - Kræver mere computerkraft
+
+## Clustering Analyse
+
+Projektet bruger K-means clustering til at gruppere lande i 6 hovedkategorier:
+
+1. Cluster 0: Mindre lande med moderat energiforbrug
+2. Cluster 1: Kina
+3. Cluster 2: USA
+4. Cluster 3: Store industrialiserede økonomier
+5. Cluster 4: Indien
+6. Cluster 5: Store lande med høj vedvarende energi
+7. Cluster 6: Alle lande kombineret
+
+## Installation og Opsætning
+
+1. **Påkrævede Python-pakker:**
 ```bash
 pip install pandas scikit-learn numpy joblib matplotlib seaborn
 ```
 
-### 2. Opsætning
-1. Klon projektet
-2. Åbn `kontrolcenter.py`
-3. Vælg ønsket landegruppering og konfiguration
+2. **Klargøring af data:**
+- Placer CSV-filer i `CSV_files` mappen
+- Verificer gyldige lande i `valid_countries.json`
+- Tjek feature konfiguration i `udvalgte_features.json`
 
-### 3. Kør Analyserne
+3. **Konfiguration:**
+- Åbn `kontrolcenter.py`
+- Juster parametre efter behov
+- Vælg ønsket cluster via `SELECTED_CLUSTER`
 
-For korrelationsanalyse:
+## Anvendelse
+
+1. **Korrelationsanalyse:**
 ```bash
 python correlation.py
 ```
 
-For clustering-analyse:
-```bash
-python claude_cluster.py
-python claude_dbscan.py
-python claude_time_cluster.py
-```
-
-For modeltræning:
+2. **Model træning:**
 ```bash
 python models.py
 ```
 
-## Databehandling og Analyse
+3. **Visualisering af resultater:**
+```bash
+python plot_predictions.py
+```
 
-1. **Feature Selection** (`features.py`)
-   - Datarensning og -forberedelse
-   - Normalisering
-   - Kategorisk encoding
-   
-2. **Korrelationsanalyse** (`correlation.py`)
-   - Identificerer variable sammenhænge
-   - Skaber korrelationsmatrix
-   - Finder nøglevariable
+## Databehandling
 
-3. **Clustering** (claude_*.py filer)
-   - Grupperer lande efter forskellige metoder
-   - Analyserer udviklingsmønstre
-   - Identificerer lignende lande
+Projektet følger en struktureret tilgang til databehandling:
 
-4. **Modeltræning** (`models.py`)
-   - Træner forskellige modeller
-   - Evaluerer præstationer
-   - Gemmer bedste modeller
+1. **Datarensning** (`features.py`)
+   - Fjernelse af ugyldige lande
+   - Håndtering af manglende værdier
+   - Feature normalisering
 
-## Evaluering og Resultater
+2. **Feature Selection** (`udvalgte_features.json`)
+   - Prædefinerede feature sæt
+   - Optimerede feature kombinationer
+   - Korrelationsbaseret udvælgelse
 
-Vi evaluerer vores modeller på:
-- R² score (0-1): Forklaringsgrad
-- RMSE: Gennemsnitlig afvigelse
-- Silhouette score: Kvalitet af clustering
+## Evaluering
+
+Modellerne evalueres på følgende metrikker:
+- R² score (forklaringsgrad)
+- RMSE (root mean squared error)
+- Procentvis afvigelse
+- Fejlprocent per land
 
 ## Fejlfinding
 
 Almindelige problemer og løsninger:
-- "ModuleNotFoundError": Installer manglende pakker
-- "FileNotFoundError": Tjek stien til CSV-filer
-- "KeyError": Verificer feature-navne i konfigurationen
+- **FileNotFoundError**: Tjek at alle CSV-filer er korrekt placeret
+- **KeyError**: Verificer feature navne i konfigurationen
+- **ValueError**: Tjek datatyper og manglende værdier
 
+## Vedligeholdelse
 
-## Særlige Noter
-
-- Brug `kontrolcenter.py` til at styre analyserne
-- Dokumentér ændringer og resultater
-- Vær opmærksom på datakvalitet og manglende værdier
-- Brug clustering-resultaterne til at forstå landemønstre
-
-## Vil Du Vide Mere?
-
-Prøv at:
-1. Eksperimentere med forskellige clustering-parametre
-2. Sammenligne modellers resultater på tværs af landegrupper
-3. Analysere tidsmønstre i data
-4. Tilføje nye variable til analysen
-
-God fornøjelse med projektet!
+For at vedligeholde og opdatere projektet:
+1. Brug `kontrolcenter.py` til konfigurationsændringer
+2. Dokumentér alle ændringer
+3. Test nye features isoleret
+4. Opdater konfigurationsfiler ved behov

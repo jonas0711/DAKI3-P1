@@ -1,57 +1,43 @@
 {
-    "cluster_0": {
-        "description": "Mindre lande med moderat energiforbrug",
-        "countries": [
-            "Algeria", "Argentina", "Austria", "Azerbaijan", "Belarus", "Belgium", 
-            "Bulgaria", "Chile", "Colombia", "Croatia", "Czechia", "Denmark", 
-            "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
-            "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
-            "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
-            "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
-            "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
-            "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
-            "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
-            "United Arab Emirates", "Uzbekistan"
-        ]
-    },
-    "cluster_1": {
-        "description": "Kina - Høj kulforbrug og befolkning",
-        "countries": ["China"]
-    },
-    "cluster_2": {
-        "description": "USA - Høj olie- og gasforbrug",
-        "countries": ["United States"]
-    },
-    "cluster_3": {
-        "description": "Store industrialiserede økonomier",
-        "countries": [
-            "France", "Germany", "Indonesia", "Italy", "Japan", 
-            "Mexico", "United Kingdom"
-        ]
-    },
-    "cluster_4": {
-        "description": "Indien - Høj befolkning og kulforbrug",
-        "countries": ["India"]
-    },
-    "cluster_5": {
-        "description": "Store lande med høj vedvarende energi",
-        "countries": ["Australia", "Brazil", "Canada"]
-    },
-    "cluster_6": {
-        "description": "Alle lande fra de øvrige klynger",
-        "countries": [
-            "Algeria", "Argentina", "Austria", "Azerbaijan", "Belarus", "Belgium", 
-            "Bulgaria", "Chile", "Colombia", "Croatia", "Czechia", "Denmark", 
-            "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
-            "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
-            "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
-            "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
-            "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
-            "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
-            "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
-            "United Arab Emirates", "Uzbekistan",
-            "China", "United States", "France", "Germany", "Indonesia", 
-            "Italy", "Japan", "Mexico", "United Kingdom", "India", 
-            "Australia", "Brazil", "Canada"
-        ]}
+    "cluster_0": [
+        "Algeria", "Argentina", "Austria", "Azerbaijan", "Belarus", "Belgium", 
+        "Bulgaria", "Chile", "Colombia", "Croatia", "Czechia", "Denmark", 
+        "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
+        "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
+        "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
+        "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
+        "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
+        "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
+        "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
+        "United Arab Emirates", "Uzbekistan"
+    ],
+
+    "cluster_1": ["China"],
+
+    "cluster_2": ["United States"],
+
+    "cluster_3": [
+        "France", "Germany", "Indonesia", "Italy", "Japan", 
+        "Mexico", "United Kingdom"
+    ],
+
+    "cluster_4": ["India"],
+
+    "cluster_5": ["Australia", "Brazil", "Canada"],
+    
+    "cluster_6": [
+        "Algeria", "Argentina", "Austria", "Azerbaijan", "Belarus", "Belgium", 
+        "Bulgaria", "Chile", "Colombia", "Croatia", "Czechia", "Denmark", 
+        "Ecuador", "Egypt", "Estonia", "Finland", "Greece", "Hungary", 
+        "Iceland", "Iraq", "Ireland", "Israel", "Kazakhstan", "Latvia", 
+        "Lithuania", "Luxembourg", "Malaysia", "Morocco", "Netherlands", 
+        "New Zealand", "North Macedonia", "Norway", "Pakistan", "Peru",
+        "Philippines", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", 
+        "South Africa", "Spain", "Sri Lanka", "Sweden", "Switzerland", 
+        "Thailand", "Trinidad and Tobago", "Turkey", "Ukraine", 
+        "United Arab Emirates", "Uzbekistan",
+        "China", "United States", "France", "Germany", "Indonesia", 
+        "Italy", "Japan", "Mexico", "United Kingdom", "India", 
+        "Australia", "Brazil", "Canada"
+    ]
 }
