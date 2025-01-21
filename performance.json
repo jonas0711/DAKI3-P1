@@ -1,0 +1,71 @@
+{
+    "cluster_0": {
+        "Argentina": "7.11%",
+        "Austria": "-5.89%",
+        "Azerbaijan": "13.56%",
+        "Belarus": "13.74%",
+        "Belgium": "12.97%",
+        "Bulgaria": "1.14%",
+        "Chile": "5.28%",
+        "Colombia": "33.84%",
+        "Croatia": "16.02%",
+        "Czech Republic": "14.68%",
+        "Denmark": "11.29%",
+        "Ecuador": "-13.98%",
+        "Estonia": "39.57%",
+        "Finland": "8.80%",
+        "Greece": "2.96%",
+        "Hungary": "7.84%",
+        "Iraq": "-31.24%",
+        "Ireland": "-7.46%",
+        "Israel": "5.05%",
+        "Kazakhstan": "15.68%",
+        "Latvia": "9.76%",
+        "Lithuania": "41.27%",
+        "Luxembourg": "3.53%",
+        "Malaysia": "17.45%",
+        "Morocco": "-10.40%",
+        "Netherlands": "12.30%",
+        "New Zealand": "12.34%",
+        "North Macedonia": "14.81%",
+        "Norway": "0.84%",
+        "Pakistan": "14.71%",
+        "Peru": "-1.63%",
+        "Philippines": "-8.14%",
+        "Poland": "2.34%",
+        "Portugal": "12.52%",
+        "Romania": "-11.91%",
+        "Slovenia": "-8.45%",
+        "South Africa": "-7.62%",
+        "Spain": "9.40%",
+        "Sweden": "17.81%",
+        "Switzerland": "2.32%",
+        "Thailand": "19.65%",
+        "Trinidad and Tobago": "126.64%",
+        "Ukraine": "46.72%",
+        "Uzbekistan": "6.31%"
+    },
+    "cluster_1": {
+        "China": "-27.99%"
+    },
+    "cluster_2": {
+        "United States": "8.87%"
+    },
+    "cluster_3": {
+        "France": "36.23%",
+        "Germany": "-1.74%",
+        "Indonesia": "4.83%",
+        "Italy": "22.55%",
+        "Japan": "3.87%",
+        "Mexico": "6.15%",
+        "United Kingdom": "27.65%"
+    },
+    "cluster_4": {
+        "India": "-37.41%"
+    },
+    "cluster_5": {
+        "Australia": "2.03%",
+        "Brazil": "-0.62%",
+        "Canada": "-2.08%"
+    }
+}
